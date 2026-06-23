@@ -10,7 +10,7 @@ st.set_page_config(page_title="Analisis Sentimen Mobil Listrik", page_icon="🚗
 @st.cache_data
 def load_data():
     yt_sentimen = pd.read_excel("dataset_sentimen_final_Youtube.xlsx")
-    tt_sentimen = pd.read_excel("dataset_sentimen_final_Tiktok Baru.xlsx")
+    tt_sentimen = pd.read_excel("dataset_sentimen_final Tiktok Baru.xlsx")
     yt_aspek = pd.read_excel("dataset_final_aspek_Youtube.xlsx")
     tt_aspek = pd.read_excel("dataset_final_aspek_Tiktok.xlsx")
     lda_yt = pd.read_excel("top_words_lda_Youtube.xlsx")
