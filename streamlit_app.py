@@ -42,7 +42,13 @@ def load_data():
         lstm_yt,
         lstm_tt
     )
-    (
+
+
+# =========================
+# TIDAK ADA INDENTASI LAGI
+# =========================
+
+(
     yt,
     tt,
     aspek_yt,
@@ -56,6 +62,7 @@ def load_data():
 ) = load_data()
 
 dataset = pd.concat([yt, tt], ignore_index=True)
+
 
 def hitung_statistik(data):
 
