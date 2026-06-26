@@ -94,7 +94,7 @@ if menu=="🏠 Dashboard":
     st.title("Dashboard Analisis Sentimen Mobil Listrik Indonesia")
     st.info("Part 001 hanya berisi kerangka aplikasi. Seluruh fitur akan dilengkapi pada part berikutnya.")
 
-total, positif, netral, negatif = hitung_statistik(dataset)
+    total, positif, netral, negatif = hitung_statistik(dataset)
 
     c1,c2,c3,c4,c5,c6 = st.columns(6)
 
