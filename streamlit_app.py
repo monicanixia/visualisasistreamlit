@@ -48,7 +48,6 @@ def load_data():
         xgb_yt,xgb_tt,
         lstm_yt,lstm_tt
     )
-(
  
 
 
