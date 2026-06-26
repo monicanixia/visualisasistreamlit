@@ -14,6 +14,31 @@ from streamlit.components.v1 import html
 
 @st.cache_data
 def load_data():
+(
+    yt,
+    tt,
+    aspek_yt,
+    aspek_tt,
+    lda_yt,
+    lda_tt,
+    xgb_yt,
+    xgb_tt,
+    lstm_yt,
+    lstm_tt
+) = load_data()
+
+dataset = pd.concat([yt, tt], ignore_index=True)
+def hitung_statistik(data):
+
+    total = len(data)
+
+    positif = len(data[data["sentiment_label_final"]=="Positif"])
+
+    netral = len(data[data["sentiment_label_final"]=="Netral"])
+
+    negatif = len(data[data["sentiment_label_final"]=="Negatif"])
+
+    return total, positif, netral, negatif
 
     yt = pd.read_excel("dataset_sentimen_final_Youtube.xlsx")
     tt = pd.read_excel("dataset_sentimen_final Tiktok Baru.xlsx")
@@ -82,12 +107,21 @@ if menu=="🏠 Dashboard":
     st.title("Dashboard Analisis Sentimen Mobil Listrik Indonesia")
     st.info("Part 001 hanya berisi kerangka aplikasi. Seluruh fitur akan dilengkapi pada part berikutnya.")
 
-    c1,c2,c3,c4=st.columns(4)
+    total, positif, netral, negatif = hitung_statistik(dataset)
 
-    c1.metric("Total Data","-")
-    c2.metric("Youtube","-")
-    c3.metric("TikTok","-")
-    c4.metric("Akurasi Terbaik","-")
+c1,c2,c3,c4,c5,c6 = st.columns(6)
+
+c1.metric("📊 Total", total)
+
+c2.metric("▶️ Youtube", len(yt))
+
+c3.metric("🎵 TikTok", len(tt))
+
+c4.metric("😊 Positif", positif)
+
+c5.metric("😐 Netral", netral)
+
+c6.metric("😠 Negatif", negatif)
 
     st.markdown("---")
 
