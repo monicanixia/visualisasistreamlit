@@ -119,7 +119,6 @@ menu = st.sidebar.radio(
 
 if menu=="🏠 Dashboard":
     st.title("Dashboard Analisis Sentimen Mobil Listrik Indonesia")
-    st.info("Part 001 hanya berisi kerangka aplikasi. Seluruh fitur akan dilengkapi pada part berikutnya.")
 
     total, positif, netral, negatif = hitung_statistik(dataset)
     
