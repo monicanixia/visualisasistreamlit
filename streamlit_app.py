@@ -123,19 +123,13 @@ if menu=="🏠 Dashboard":
 
     total, positif, netral, negatif = hitung_statistik(dataset)
     
-    c1,c2,c3,c4,c5,c6 = st.columns(6)
+    c1,c2,c3 = st.columns(3)
 
     c1.metric("📊 Total", total)
 
     c2.metric("▶️ Youtube", len(yt))
 
     c3.metric("🎵 TikTok", len(tt))
-
-    c4.metric("😊 Positif", positif)
-
-    c5.metric("😐 Netral", netral)
-
-    c6.metric("😠 Negatif", negatif)
 
     st.markdown("---")
 
