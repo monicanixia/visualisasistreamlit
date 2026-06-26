@@ -165,8 +165,49 @@ Dashboard ini nantinya akan menampilkan:
 """)
 
 elif menu=="📁 Dataset":
-    st.title("Dataset")
-    st.warning("Fitur akan dilengkapi pada Part 002.")
+
+    st.title("📁 Dataset Hasil Preprocessing")
+
+    pilihan = st.radio(
+        "Pilih Dataset",
+        ["📺 YouTube", "🎵 TikTok"],
+        horizontal=True
+    )
+
+    if pilihan == "📺 YouTube":
+        data = yt
+        nama = "YouTube"
+
+    else:
+        data = tt
+        nama = "TikTok"
+
+    st.markdown(f"### Dataset {nama}")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.metric("Jumlah Data", len(data))
+
+    with col2:
+        st.metric("Jumlah Kolom", len(data.columns))
+
+    st.markdown("---")
+
+    st.subheader("Preview Dataset")
+
+    st.dataframe(
+        data,
+        use_container_width=True,
+        height=500
+    )
+
+    st.download_button(
+        label="⬇ Download Dataset",
+        data=data.to_csv(index=False).encode("utf-8"),
+        file_name=f"dataset_preprocessing_{nama}.csv",
+        mime="text/csv"
+    )
 
 elif menu=="📊 Distribusi Label":
     st.title("Distribusi Label")
