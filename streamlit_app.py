@@ -15,8 +15,6 @@ from streamlit.components.v1 import html
 @st.cache_data
 def load_data():
 
-dataset = pd.concat([yt, tt], ignore_index=True)
-def hitung_statistik(data):
 
     total = len(data)
 
