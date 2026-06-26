@@ -4,6 +4,40 @@ streamlit_app.py
 """
 
 import streamlit as st
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+import matplotlib.pyplot as plt
+from wordcloud import WordCloud
+from PIL import Image
+from streamlit.components.v1 import html
+
+@st.cache_data
+def load_data():
+
+    yt = pd.read_excel("dataset_sentimen_final_Youtube.xlsx")
+    tt = pd.read_excel("dataset_sentimen_final Tiktok Baru.xlsx")
+
+    aspek_yt = pd.read_excel("dataset_final_aspek_Youtube.xlsx")
+    aspek_tt = pd.read_excel("dataset_final_aspek Tiktok.xlsx")
+
+    lda_yt = pd.read_excel("top_words_lda Youtube.xlsx")
+    lda_tt = pd.read_excel("top_words_lda Tiktok.xlsx")
+
+    xgb_yt = pd.read_excel("ringkasan_xgboost_Youtube.xlsx")
+    xgb_tt = pd.read_excel("ringkasan_xgboost_Tiktok.xlsx")
+
+    lstm_yt = pd.read_excel("ringkasan_lstm_Youtube.xlsx")
+    lstm_tt = pd.read_excel("ringkasan_lstm_Tiktok.xlsx")
+
+    return (
+        yt,tt,
+        aspek_yt,aspek_tt,
+        lda_yt,lda_tt,
+        xgb_yt,xgb_tt,
+        lstm_yt,lstm_tt
+    )
+
 
 st.set_page_config(
     page_title="Analisis Sentimen Mobil Listrik Indonesia",
