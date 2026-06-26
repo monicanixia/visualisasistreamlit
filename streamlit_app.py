@@ -14,18 +14,6 @@ from streamlit.components.v1 import html
 
 @st.cache_data
 def load_data():
-(
-    yt,
-    tt,
-    aspek_yt,
-    aspek_tt,
-    lda_yt,
-    lda_tt,
-    xgb_yt,
-    xgb_tt,
-    lstm_yt,
-    lstm_tt
-) = load_data()
 
 dataset = pd.concat([yt, tt], ignore_index=True)
 def hitung_statistik(data):
@@ -62,6 +50,18 @@ def hitung_statistik(data):
         xgb_yt,xgb_tt,
         lstm_yt,lstm_tt
     )
+(
+    yt,
+    tt,
+    aspek_yt,
+    aspek_tt,
+    lda_yt,
+    lda_tt,
+    xgb_yt,
+    xgb_tt,
+    lstm_yt,
+    lstm_tt
+) = load_data()
 
 
 st.set_page_config(
