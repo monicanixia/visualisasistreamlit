@@ -210,8 +210,86 @@ elif menu=="📁 Dataset":
     )
 
 elif menu=="📊 Distribusi Label":
-    st.title("Distribusi Label")
-    st.warning("Fitur akan dilengkapi pada Part 003.")
+
+    st.title("📊 Distribusi Label Sentimen")
+
+    pilihan = st.radio(
+        "Pilih Dataset",
+        ["📺 YouTube", "🎵 TikTok"],
+        horizontal=True
+    )
+
+    if pilihan == "📺 YouTube":
+        data = yt
+        nama = "YouTube"
+    else:
+        data = tt
+        nama = "TikTok"
+
+    st.subheader(f"Distribusi Label Dataset {nama}")
+
+    distribusi = (
+        data["sentiment_label_final"]
+        .value_counts()
+        .reindex(["Positif", "Netral", "Negatif"], fill_value=0)
+        .reset_index()
+    )
+
+    distribusi.columns = ["Label", "Jumlah"]
+
+    fig = px.bar(
+        distribusi,
+        x="Label",
+        y="Jumlah",
+        text="Jumlah",
+        color="Label",
+        color_discrete_map={
+            "Positif": "#2ecc71",
+            "Netral": "#95a5a6",
+            "Negatif": "#e74c3c"
+        }
+    )
+
+    fig.update_layout(
+        title="Distribusi Data per Label",
+        xaxis_title="Label Sentimen",
+        yaxis_title="Jumlah Data",
+        template="plotly_white",
+        height=550,
+        showlegend=False
+    )
+
+    fig.update_traces(
+        textposition="outside"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.markdown("---")
+
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric(
+        "😊 Positif",
+        distribusi.loc[distribusi["Label"]=="Positif","Jumlah"].values[0]
+    )
+
+    col2.metric(
+        "😐 Netral",
+        distribusi.loc[distribusi["Label"]=="Netral","Jumlah"].values[0]
+    )
+
+    col3.metric(
+        "😠 Negatif",
+        distribusi.loc[distribusi["Label"]=="Negatif","Jumlah"].values[0]
+    )
+
+    with st.expander("Lihat Data Distribusi"):
+
+        st.dataframe(
+            distribusi,
+            use_container_width=True
+        )
 
 elif menu=="☁️ Word Cloud":
     st.title("Word Cloud")
