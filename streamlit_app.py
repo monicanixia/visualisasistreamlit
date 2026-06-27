@@ -228,68 +228,81 @@ elif menu=="📊 Distribusi Label":
 
     st.subheader(f"Distribusi Label Dataset {nama}")
 
+    # Menghitung jumlah label
     distribusi = (
         data["sentiment_label_final"]
         .value_counts()
-        .reindex(["Positif", "Netral", "Negatif"], fill_value=0)
+        .reindex(["Positif", "Negatif", "Netral"], fill_value=0)
         .reset_index()
     )
 
-    distribusi.columns = ["Label", "Jumlah"]
+    distribusi.columns = ["Sentimen", "Jumlah"]
+
+    # Warna batang
+    warna = {
+        "Positif": "#2ecc71",
+        "Negatif": "#e74c3c",
+        "Netral": "#95a5a6"
+    }
 
     fig = px.bar(
         distribusi,
-        x="Label",
+        x="Sentimen",
         y="Jumlah",
+        color="Sentimen",
         text="Jumlah",
-        color="Label",
-        color_discrete_map={
-            "Positif": "#2ecc71",
-            "Netral": "#95a5a6",
-            "Negatif": "#e74c3c"
-        }
-    )
-
-    fig.update_layout(
-        title="Distribusi Data per Label",
-        xaxis_title="Label Sentimen",
-        yaxis_title="Jumlah Data",
-        template="plotly_white",
-        height=550,
-        showlegend=False
+        color_discrete_map=warna
     )
 
     fig.update_traces(
         textposition="outside"
     )
 
+    fig.update_layout(
+        title=f"Distribusi Sentimen Dataset {nama}",
+        xaxis_title="Label Sentimen",
+        yaxis_title="Jumlah Data",
+        showlegend=False,
+        height=550
+    )
+
     st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("---")
 
-    col1, col2, col3 = st.columns(3)
+    c1, c2, c3 = st.columns(3)
 
-    col1.metric(
+    c1.metric(
         "😊 Positif",
-        distribusi.loc[distribusi["Label"]=="Positif","Jumlah"].values[0]
+        int(distribusi.loc[
+            distribusi["Sentimen"]=="Positif",
+            "Jumlah"
+        ].values[0])
     )
 
-    col2.metric(
-        "😐 Netral",
-        distribusi.loc[distribusi["Label"]=="Netral","Jumlah"].values[0]
-    )
-
-    col3.metric(
+    c2.metric(
         "😠 Negatif",
-        distribusi.loc[distribusi["Label"]=="Negatif","Jumlah"].values[0]
+        int(distribusi.loc[
+            distribusi["Sentimen"]=="Negatif",
+            "Jumlah"
+        ].values[0])
     )
 
-    with st.expander("Lihat Data Distribusi"):
+    c3.metric(
+        "😐 Netral",
+        int(distribusi.loc[
+            distribusi["Sentimen"]=="Netral",
+            "Jumlah"
+        ].values[0])
+    )
 
-        st.dataframe(
-            distribusi,
-            use_container_width=True
-        )
+    st.markdown("### Tabel Distribusi Label")
+
+    st.dataframe(
+        distribusi,
+        use_container_width=True,
+        hide_index=True
+    )
 
 elif menu=="☁️ Word Cloud":
     st.title("Word Cloud")
