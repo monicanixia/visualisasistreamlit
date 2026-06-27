@@ -311,430 +311,62 @@ elif menu=="📊 Distribusi Label":
         hide_index=True
     )
 
-# ============================================================
-# HALAMAN WORD CLOUD
-# PART 1
-# Import Library + Load Dataset
-# ============================================================
-
-import os
-from pathlib import Path
-
-import pandas as pd
-import numpy as np
-
-import streamlit as st
-
-import matplotlib.pyplot as plt
-
-import plotly.express as px
-
-from wordcloud import WordCloud
-
-from collections import Counter
-
-# ============================================================
-# KONFIGURASI FOLDER
-# ============================================================
-
-BASE_DIR = Path(__file__).parent
-
-# ============================================================
-# LOKASI DATASET
-# ============================================================
-
-# Jika file berada di folder utama repository
-
-YT_FILE = BASE_DIR / "dataset_wordcloud_Youtube.xlsx"
-TT_FILE = BASE_DIR / "dataset_wordcloud_Tiktok.xlsx"
-
-# ============================================================
-# JIKA DATASET BERADA DI FOLDER "dataset"
-# ============================================================
-
-if not YT_FILE.exists():
-
-    YT_FILE = BASE_DIR / "dataset" / "dataset_wordcloud_Youtube.xlsx"
-
-if not TT_FILE.exists():
-
-    TT_FILE = BASE_DIR / "dataset" / "dataset_wordcloud_Tiktok.xlsx"
-
-# ============================================================
-# VALIDASI FILE
-# ============================================================
-
-if not YT_FILE.exists():
-
-    st.error(
-        f"""
-Dataset YouTube tidak ditemukan.
-
-Lokasi yang dicek :
-
-{YT_FILE}
-"""
-    )
-
-    st.stop()
-
-if not TT_FILE.exists():
-
-    st.error(
-        f"""
-Dataset TikTok tidak ditemukan.
-
-Lokasi yang dicek :
-
-{TT_FILE}
-"""
-    )
-
-    st.stop()
-
-# ============================================================
-# LOAD DATASET
-# ============================================================
-
-@st.cache_data(show_spinner=False)
-
-def load_wordcloud_dataset(path):
-
-    df = pd.read_excel(path)
-
-    return df
-
-word_yt = load_wordcloud_dataset(YT_FILE)
-
-word_tt = load_wordcloud_dataset(TT_FILE)
-
-# ============================================================
-# MEMBERSIHKAN NAMA KOLOM
-# ============================================================
-
-word_yt.columns = (
-    word_yt.columns
-    .str.strip()
-    .str.lower()
-)
-
-word_tt.columns = (
-    word_tt.columns
-    .str.strip()
-    .str.lower()
-)
-
-# ============================================================
-# VALIDASI KOLOM
-# ============================================================
-
-kolom_wajib = [
-
-    "text_wordcloud",
-
-    "sentimen"
-
-]
-
-for kolom in kolom_wajib:
-
-    if kolom not in word_yt.columns:
-
-        st.error(
-            f"""
-Kolom '{kolom}' tidak ditemukan pada dataset YouTube.
-
-Kolom yang tersedia :
-
-{list(word_yt.columns)}
-"""
-        )
-
-        st.stop()
-
-for kolom in kolom_wajib:
-
-    if kolom not in word_tt.columns:
-
-        st.error(
-            f"""
-Kolom '{kolom}' tidak ditemukan pada dataset TikTok.
-
-Kolom yang tersedia :
-
-{list(word_tt.columns)}
-"""
-        )
-
-        st.stop()
-
-# ============================================================
-# NORMALISASI SENTIMEN
-# ============================================================
-
-word_yt["sentimen"] = (
-
-    word_yt["sentimen"]
-
-    .fillna("")
-
-    .astype(str)
-
-    .str.strip()
-
-    .str.title()
-
-)
-
-word_tt["sentimen"] = (
-
-    word_tt["sentimen"]
-
-    .fillna("")
-
-    .astype(str)
-
-    .str.strip()
-
-    .str.title()
-
-)
-
-# ============================================================
-# MEMBERSIHKAN KOLOM WORD CLOUD
-# ============================================================
-
-word_yt["text_wordcloud"] = (
-
-    word_yt["text_wordcloud"]
-
-    .fillna("")
-
-    .astype(str)
-
-)
-
-word_tt["text_wordcloud"] = (
-
-    word_tt["text_wordcloud"]
-
-    .fillna("")
-
-    .astype(str)
-
-)
-
-# ============================================================
-# MENGHAPUS DUPLIKAT
-# ============================================================
-
-word_yt = word_yt.drop_duplicates().reset_index(drop=True)
-
-word_tt = word_tt.drop_duplicates().reset_index(drop=True)
-
-# ============================================================
-# INFORMASI DATASET
-# ============================================================
-
-jumlah_youtube = len(word_yt)
-
-jumlah_tiktok = len(word_tt)
-
-total_dataset = jumlah_youtube + jumlah_tiktok
-
-# ============================================================
-# WARNA WORD CLOUD
-# ============================================================
-
-WORDCLOUD_WIDTH = 1800
-
-WORDCLOUD_HEIGHT = 900
-
-BACKGROUND_COLOR = "white"
-
-COLORMAP = "viridis"
-
-MAX_WORD = 200
-
-# ============================================================
-# STOPWORDS TAMBAHAN
-# ============================================================
-
-CUSTOM_STOPWORDS = {
-
-    "mobil",
-    "listrik",
-    "kendaraan",
-    "ev",
-    "indonesia",
-
-    "yg",
-    "ya",
-    "iya",
-    "aja",
-    "nih",
-    "sih",
-    "bang",
-    "bro",
-    "deh",
-    "dong",
-    "kan",
-    "kok",
-
-    "aku",
-    "saya",
-    "kami",
-    "kita",
-    "orang",
-
-    "buat",
-    "jadi",
-    "karena",
-    "kalau",
-    "kalo",
-
-    "lebih",
-    "masih",
-    "cukup",
-    "banyak",
-
-    "itu",
-    "ini",
-
-    "the",
-    "and",
-
-    "nya",
-    "pun",
-    "nihh",
-    "dongg",
-    "lah",
-
-    "udah",
-    "sudah",
-    "biar",
-    "dari",
-    "dengan",
-    "dalam",
-    "ke",
-    "di",
-    "yang",
-    "untuk",
-    "pada",
-    "oleh",
-    "atau",
-    "agar",
-    "sebagai",
-    "sebuah",
-    "karna"
-
-}
-
-# ============================================================
-# FUNGSI MEMBERSIHKAN TEXT
-# ============================================================
-
-def clean_wordcloud_text(text):
-
-    text = str(text)
-
-    text = text.replace("[", " ")
-
-    text = text.replace("]", " ")
-
-    text = text.replace("'", " ")
-
-    text = text.replace('"', " ")
-
-    text = text.replace(",", " ")
-
-    text = " ".join(text.split())
-
-    return text
-
-word_yt["text_wordcloud"] = word_yt["text_wordcloud"].apply(clean_wordcloud_text)
-
-word_tt["text_wordcloud"] = word_tt["text_wordcloud"].apply(clean_wordcloud_text)
-
-# ============================================================
-# AKHIR PART 1
-# ============================================================
-
-# ============================================================
-# HALAMAN WORD CLOUD
-# PART 2
-# ============================================================
-
-elif menu == "☁️ Word Cloud":
+elif menu=="☁️ Word Cloud":
 
     st.title("☁️ Word Cloud Sentimen")
 
     st.markdown("""
-Visualisasi **Word Cloud** digunakan untuk menampilkan kata-kata yang paling sering muncul
-berdasarkan **dataset** dan **label sentimen**.
-
-Silakan pilih dataset dan sentimen yang ingin dianalisis.
+Visualisasi **Word Cloud** digunakan untuk melihat kata-kata yang
+paling sering muncul berdasarkan **dataset** dan **label sentimen**.
 """)
 
     st.markdown("---")
 
-    # ============================================================
-    # INFORMASI DATASET
-    # ============================================================
-
-    info1, info2, info3 = st.columns(3)
-
-    info1.metric(
-        "Dataset YouTube",
-        f"{jumlah_youtube:,}"
-    )
-
-    info2.metric(
-        "Dataset TikTok",
-        f"{jumlah_tiktok:,}"
-    )
-
-    info3.metric(
-        "Total Dataset",
-        f"{total_dataset:,}"
-    )
-
-    st.markdown("---")
-
-    # ============================================================
-    # PILIH DATASET DAN SENTIMEN
-    # ============================================================
+    # =====================================================
+    # PILIH DATASET
+    # =====================================================
 
     col1, col2 = st.columns(2)
 
     with col1:
 
         dataset_pilih = st.selectbox(
+
             "📂 Pilih Dataset",
-            (
+
+            [
+
                 "YouTube",
+
                 "TikTok"
-            ),
-            index=0
+
+            ]
+
         )
 
     with col2:
 
         label_pilih = st.selectbox(
+
             "😊 Pilih Sentimen",
-            (
+
+            [
+
                 "Positif",
+
                 "Netral",
+
                 "Negatif"
-            ),
-            index=0
+
+            ]
+
         )
 
     st.markdown("---")
 
-    # ============================================================
+    # =====================================================
     # MEMILIH DATASET
-    # ============================================================
+    # =====================================================
 
     if dataset_pilih == "YouTube":
 
@@ -744,77 +376,93 @@ Silakan pilih dataset dan sentimen yang ingin dianalisis.
 
         data = word_tt.copy()
 
-    # ============================================================
+    # =====================================================
+    # NORMALISASI NAMA KOLOM
+    # =====================================================
+
+    data.columns = (
+
+        data.columns
+
+        .str.strip()
+
+        .str.lower()
+
+    )
+
+    # =====================================================
+    # VALIDASI KOLOM
+    # =====================================================
+
+    if "sentimen" not in data.columns:
+
+        st.error(
+
+            "Kolom 'sentimen' tidak ditemukan."
+
+        )
+
+        st.write(data.columns.tolist())
+
+        st.stop()
+
+    if "text_wordcloud" not in data.columns:
+
+        st.error(
+
+            "Kolom 'text_wordcloud' tidak ditemukan."
+
+        )
+
+        st.write(data.columns.tolist())
+
+        st.stop()
+
+    # =====================================================
+    # MEMBERSIHKAN LABEL SENTIMEN
+    # =====================================================
+
+    data["sentimen"] = (
+
+        data["sentimen"]
+
+        .fillna("")
+
+        .astype(str)
+
+        .str.strip()
+
+        .str.title()
+
+    )
+
+    # =====================================================
     # FILTER SENTIMEN
-    # ============================================================
+    # =====================================================
 
     data = data[
+
         data["sentimen"] == label_pilih
+
     ].copy()
 
-    # ============================================================
-    # INFORMASI HASIL FILTER
-    # ============================================================
-
-    st.subheader(f"📊 Dataset {dataset_pilih}")
-
-    jumlah_filter = len(data)
-
-    total_kata = (
-        data["text_wordcloud"]
-        .fillna("")
-        .astype(str)
-        .str.split()
-        .explode()
-        .shape[0]
-    )
-
-    unik_kata = (
-        data["text_wordcloud"]
-        .fillna("")
-        .astype(str)
-        .str.split()
-        .explode()
-        .nunique()
-    )
-
-    met1, met2, met3 = st.columns(3)
-
-    met1.metric(
-        "Jumlah Komentar",
-        f"{jumlah_filter:,}"
-    )
-
-    met2.metric(
-        "Total Kata",
-        f"{total_kata:,}"
-    )
-
-    met3.metric(
-        "Kata Unik",
-        f"{unik_kata:,}"
-    )
-
-    st.markdown("---")
-
-    # ============================================================
+    # =====================================================
     # JIKA DATA KOSONG
-    # ============================================================
+    # =====================================================
 
     if data.empty:
 
         st.warning(
-            f"""
-Tidak ada data dengan label sentimen **{label_pilih}**
-pada dataset **{dataset_pilih}**.
-"""
+
+            f"Tidak ada data sentimen {label_pilih}."
+
         )
 
         st.stop()
 
-    # ============================================================
-    # MEMBENTUK TEXT WORD CLOUD
-    # ============================================================
+    # =====================================================
+    # MEMBERSIHKAN TEXT
+    # =====================================================
 
     text = " ".join(
 
@@ -826,100 +474,206 @@ pada dataset **{dataset_pilih}**.
 
     )
 
-    text = clean_wordcloud_text(text)
+    text = (
 
-    if len(text.strip()) == 0:
+        text
 
-        st.warning("Seluruh isi text kosong.")
+        .replace("[", " ")
 
-        st.stop()
+        .replace("]", " ")
 
-    st.markdown("---")
+        .replace("'", " ")
 
-    # ============================================================
-    # LANJUT KE PART 3
-    # ============================================================
-    # ============================================================
+        .replace('"', " ")
+
+        .replace(",", " ")
+
+    )
+
+    text = " ".join(text.split())
+
+    # =====================================================
+    # STOPWORDS
+    # =====================================================
+
+    stop_words = {
+
+        "mobil",
+
+        "listrik",
+
+        "kendaraan",
+
+        "ev",
+
+        "indonesia",
+
+        "yg",
+
+        "nya",
+
+        "aja",
+
+        "nih",
+
+        "sih",
+
+        "bang",
+
+        "bro",
+
+        "deh",
+
+        "dong",
+
+        "kan",
+
+        "aku",
+
+        "saya",
+
+        "kami",
+
+        "kita",
+
+        "orang",
+
+        "buat",
+
+        "jadi",
+
+        "karena",
+
+        "kalau",
+
+        "kalo",
+
+        "lebih",
+
+        "masih",
+
+        "cukup",
+
+        "banyak",
+
+        "itu",
+
+        "ini",
+
+        "the",
+
+        "and"
+
+    }
+
+    # =====================================================
+    # LANJUT PART 2
+    # =====================================================
+    # =====================================================
     # MEMBUAT WORD CLOUD
-    # ============================================================
+    # =====================================================
 
     wc = WordCloud(
 
-        width=WORDCLOUD_WIDTH,
+        width=1800,
 
-        height=WORDCLOUD_HEIGHT,
+        height=900,
 
-        background_color=BACKGROUND_COLOR,
+        background_color="white",
 
-        stopwords=CUSTOM_STOPWORDS,
+        stopwords=stop_words,
 
-        max_words=MAX_WORD,
+        max_words=200,
 
         collocations=False,
 
-        contour_width=2,
+        contour_width=1,
 
         contour_color="steelblue",
 
-        colormap=COLORMAP,
+        colormap="viridis",
 
         random_state=42
 
     ).generate(text)
 
-    # ============================================================
+    # =====================================================
     # TAMPILKAN WORD CLOUD
-    # ============================================================
+    # =====================================================
 
     st.subheader(
-        f"☁️ Word Cloud {dataset_pilih} ({label_pilih})"
+
+        f"☁️ Word Cloud {dataset_pilih} - {label_pilih}"
+
     )
 
-    fig, ax = plt.subplots(figsize=(18, 9))
+    fig, ax = plt.subplots(
+
+        figsize=(18,9)
+
+    )
 
     ax.imshow(
+
         wc,
+
         interpolation="bilinear"
+
     )
 
     ax.axis("off")
 
-    plt.tight_layout()
-
     st.pyplot(
+
         fig,
+
         use_container_width=True
+
     )
 
     plt.close(fig)
 
     st.markdown("---")
 
-    # ============================================================
-    # HITUNG FREKUENSI KATA ASLI
-    # ============================================================
+    # =====================================================
+    # HITUNG FREKUENSI KATA
+    # =====================================================
+
+    from collections import Counter
 
     semua_kata = []
 
     for kalimat in data["text_wordcloud"]:
 
-        kata = str(kalimat).split()
+        kata = (
+
+            str(kalimat)
+
+            .lower()
+
+            .split()
+
+        )
 
         kata = [
 
-            k.lower()
+            x
 
-            for k in kata
+            for x in kata
 
-            if len(k) > 1
+            if x not in stop_words
 
-            and k.lower() not in CUSTOM_STOPWORDS
+            and len(x) > 1
 
         ]
 
         semua_kata.extend(kata)
 
-    counter = Counter(semua_kata)
+    counter = Counter(
+
+        semua_kata
+
+    )
 
     top_word = (
 
@@ -945,67 +699,73 @@ pada dataset **{dataset_pilih}**.
 
         )
 
-        .reset_index(drop=True)
+        .reset_index(
 
-        .head(20)
+            drop=True
+
+        )
 
     )
-
-    # ============================================================
-    # JIKA TOP WORD KOSONG
-    # ============================================================
 
     if top_word.empty:
 
         st.warning(
+
             "Tidak ada kata yang dapat ditampilkan."
+
         )
 
         st.stop()
 
-    # ============================================================
-    # STATISTIK SETELAH WORD CLOUD
-    # ============================================================
+    st.markdown("---")
 
-    st.subheader("📊 Statistik Word Cloud")
+    # =====================================================
+    # METRIC
+    # =====================================================
 
-    m1, m2, m3 = st.columns(3)
+    c1, c2, c3 = st.columns(3)
 
-    m1.metric(
+    c1.metric(
+
+        "Jumlah Komentar",
+
+        len(data)
+
+    )
+
+    c2.metric(
 
         "Jumlah Kata",
 
-        f"{len(semua_kata):,}"
+        len(semua_kata)
 
     )
 
-    m2.metric(
+    c3.metric(
 
         "Kata Unik",
 
-        f"{len(counter):,}"
-
-    )
-
-    m3.metric(
-
-        "Top Word",
-
-        top_word.iloc[0]["Kata"]
+        len(counter)
 
     )
 
     st.markdown("---")
 
-    # ============================================================
-    # GRAFIK TOP 20 KATA
-    # ============================================================
+    # =====================================================
+    # TOP 20 WORD
+    # =====================================================
 
-    st.subheader("📈 20 Kata Paling Sering Muncul")
+    st.subheader(
 
-    fig_bar = px.bar(
+        "📈 Top 20 Kata"
 
-        top_word,
+    )
+
+    top20 = top_word.head(20)
+
+    fig2 = px.bar(
+
+        top20,
 
         x="Frekuensi",
 
@@ -1017,15 +777,13 @@ pada dataset **{dataset_pilih}**.
 
         text="Frekuensi",
 
-        color_continuous_scale="Viridis"
+        color_continuous_scale="viridis"
 
     )
 
-    fig_bar.update_layout(
+    fig2.update_layout(
 
         height=700,
-
-        title=f"Top 20 Kata ({dataset_pilih} - {label_pilih})",
 
         yaxis=dict(
 
@@ -1033,11 +791,13 @@ pada dataset **{dataset_pilih}**.
 
         ),
 
+        title=f"Top 20 Kata ({dataset_pilih} - {label_pilih})",
+
         coloraxis_showscale=False
 
     )
 
-    fig_bar.update_traces(
+    fig2.update_traces(
 
         textposition="outside"
 
@@ -1045,7 +805,7 @@ pada dataset **{dataset_pilih}**.
 
     st.plotly_chart(
 
-        fig_bar,
+        fig2,
 
         use_container_width=True
 
@@ -1053,64 +813,80 @@ pada dataset **{dataset_pilih}**.
 
     st.markdown("---")
 
-    # ============================================================
-    # LANJUT PART 4
-    # ============================================================
-    # ============================================================
+    # =====================================================
+    # LANJUT PART 3
+    # =====================================================
+    # =====================================================
     # TABEL TOP 20 KATA
-    # ============================================================
+    # =====================================================
 
-    st.subheader("📋 Tabel Frekuensi Kata")
+    st.subheader("📋 Tabel Top 20 Kata")
 
-    with st.expander("Lihat Tabel Top 20 Kata", expanded=True):
+    tampil_top = top20.copy()
 
-        tampil_top = top_word.copy()
+    tampil_top.index = tampil_top.index + 1
 
-        tampil_top.index = tampil_top.index + 1
+    tampil_top.index.name = "No"
 
-        tampil_top.index.name = "No"
+    st.dataframe(
 
-        st.dataframe(
+        tampil_top,
 
-            tampil_top,
+        use_container_width=True,
 
-            use_container_width=True
-
-        )
-
-    st.markdown("---")
-
-    # ============================================================
-    # PENCARIAN KATA
-    # ============================================================
-
-    st.subheader("🔍 Cari Kata")
-
-    keyword = st.text_input(
-
-        "Masukkan kata yang ingin dicari",
-
-        placeholder="contoh : baterai"
+        height=500
 
     )
 
-    if keyword != "":
+    st.markdown("---")
+
+    # =====================================================
+    # PENCARIAN KATA
+    # =====================================================
+
+    st.subheader("🔍 Pencarian Kata")
+
+    keyword = st.text_input(
+
+        "Masukkan kata",
+
+        placeholder="Contoh : baterai"
+
+    )
+
+    if keyword:
 
         hasil = top_word[
-            top_word["Kata"].str.contains(
+
+            top_word["Kata"]
+
+            .str.contains(
+
                 keyword,
+
                 case=False,
+
                 na=False
+
             )
+
         ]
 
-        if len(hasil) == 0:
+        if hasil.empty:
 
-            st.warning("Kata tidak ditemukan.")
+            st.warning(
+
+                "Kata tidak ditemukan."
+
+            )
 
         else:
 
-            st.success(f"Ditemukan {len(hasil)} kata.")
+            st.success(
+
+                f"Ditemukan {len(hasil)} kata."
+
+            )
 
             st.dataframe(
 
@@ -1124,115 +900,73 @@ pada dataset **{dataset_pilih}**.
 
     st.markdown("---")
 
-    # ============================================================
-    # DOWNLOAD CSV
-    # ============================================================
+    # =====================================================
+    # DOWNLOAD TOP WORD
+    # =====================================================
 
-    csv = top_word.to_csv(
+    csv = top20.to_csv(
+
         index=False
-    ).encode("utf-8")
+
+    ).encode(
+
+        "utf-8"
+
+    )
 
     st.download_button(
 
-        label="⬇️ Download CSV",
+        label="⬇️ Download Top 20 Kata",
 
         data=csv,
 
-        file_name=f"Top20_{dataset_pilih}_{label_pilih}.csv",
+        file_name=f"top20_{dataset_pilih}_{label_pilih}.csv",
 
         mime="text/csv"
 
     )
 
-    # ============================================================
-    # DOWNLOAD EXCEL
-    # ============================================================
+    st.markdown("---")
 
-    from io import BytesIO
+    # =====================================================
+    # DISTRIBUSI SENTIMEN
+    # =====================================================
 
-    output = BytesIO()
+    st.subheader("📊 Distribusi Sentimen Dataset")
 
-    with pd.ExcelWriter(
-        output,
-        engine="openpyxl"
-    ) as writer:
+    distribusi = (
 
-        top_word.to_excel(
+        word_yt
 
-            writer,
+        if dataset_pilih == "YouTube"
 
-            index=False,
-
-            sheet_name="Top Word"
-
-        )
-
-    st.download_button(
-
-        label="📥 Download Excel",
-
-        data=output.getvalue(),
-
-        file_name=f"Top20_{dataset_pilih}_{label_pilih}.xlsx",
-
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        else word_tt
 
     )
 
-    st.markdown("---")
+    distribusi = (
 
-    # ============================================================
-    # RINGKASAN
-    # ============================================================
+        distribusi["sentimen"]
 
-    st.subheader("📝 Ringkasan")
+        .value_counts()
 
-    st.info(f"""
-Dataset : **{dataset_pilih}**
+        .rename_axis("Sentimen")
 
-Label Sentimen : **{label_pilih}**
+        .reset_index(name="Jumlah")
 
-Jumlah Komentar : **{jumlah_filter:,}**
+    )
 
-Jumlah Kata : **{len(semua_kata):,}**
+    warna = {
 
-Jumlah Kata Unik : **{len(counter):,}**
+        "Positif":"#2ecc71",
 
-Kata yang paling sering muncul adalah **{top_word.iloc[0]['Kata']}**
-dengan frekuensi **{top_word.iloc[0]['Frekuensi']}** kali.
-""")
+        "Netral":"#f1c40f",
 
-    st.markdown("---")
+        "Negatif":"#e74c3c"
 
-    # ============================================================
-    # SELESAI PART 4
-    # LANJUT KE PART 5
-    # ============================================================
-    # ============================================================
-    # DISTRIBUSI SENTIMEN
-    # ============================================================
+    }
 
-    st.subheader("📊 Distribusi Sentimen")
-
-    if dataset_pilih == "YouTube":
-
-        distribusi = (
-            word_yt["sentimen"]
-            .value_counts()
-            .rename_axis("Sentimen")
-            .reset_index(name="Jumlah")
-        )
-
-    else:
-
-        distribusi = (
-            word_tt["sentimen"]
-            .value_counts()
-            .rename_axis("Sentimen")
-            .reset_index(name="Jumlah")
-        )
-
-    fig_sentimen = px.pie(
+    fig3 = px.pie(
 
         distribusi,
 
@@ -1244,29 +978,21 @@ dengan frekuensi **{top_word.iloc[0]['Frekuensi']}** kali.
 
         color="Sentimen",
 
-        color_discrete_map={
-
-            "Positif": "#2ecc71",
-
-            "Netral": "#f1c40f",
-
-            "Negatif": "#e74c3c"
-
-        }
+        color_discrete_map=warna
 
     )
 
-    fig_sentimen.update_layout(
+    fig3.update_layout(
 
         height=500,
 
-        legend_title="Label Sentimen"
+        legend_title="Sentimen"
 
     )
 
     st.plotly_chart(
 
-        fig_sentimen,
+        fig3,
 
         use_container_width=True
 
@@ -1274,57 +1000,51 @@ dengan frekuensi **{top_word.iloc[0]['Frekuensi']}** kali.
 
     st.markdown("---")
 
-    # ============================================================
-    # 10 KATA TERATAS
-    # ============================================================
-
-    st.subheader("🏆 10 Kata Terpopuler")
-
-    top10 = top_word.head(10).copy()
-
-    top10.index = top10.index + 1
-
-    st.table(top10)
-
-    st.markdown("---")
-
-    # ============================================================
+    # =====================================================
     # DATASET HASIL FILTER
-    # ============================================================
+    # =====================================================
 
-    with st.expander("📄 Lihat Dataset Hasil Filter"):
+    with st.expander(
 
-        tampil = data.copy()
+        "📄 Dataset Hasil Filter"
+
+    ):
 
         st.dataframe(
 
-            tampil,
+            data,
 
             use_container_width=True,
 
-            hide_index=True
+            hide_index=True,
+
+            height=500
 
         )
 
     st.markdown("---")
 
-    # ============================================================
-    # DOWNLOAD DATASET HASIL FILTER
-    # ============================================================
+    # =====================================================
+    # DOWNLOAD DATASET FILTER
+    # =====================================================
 
-    csv_data = data.to_csv(
+    csv_filter = data.to_csv(
 
         index=False
 
-    ).encode("utf-8")
+    ).encode(
+
+        "utf-8"
+
+    )
 
     st.download_button(
 
-        label="⬇️ Download Dataset Hasil Filter",
+        label="⬇️ Download Dataset Filter",
 
-        data=csv_data,
+        data=csv_filter,
 
-        file_name=f"Dataset_{dataset_pilih}_{label_pilih}.csv",
+        file_name=f"dataset_{dataset_pilih}_{label_pilih}.csv",
 
         mime="text/csv"
 
@@ -1332,39 +1052,38 @@ dengan frekuensi **{top_word.iloc[0]['Frekuensi']}** kali.
 
     st.markdown("---")
 
-    # ============================================================
-    # INFORMASI
-    # ============================================================
+    # =====================================================
+    # RINGKASAN
+    # =====================================================
 
-    with st.expander("ℹ️ Informasi Visualisasi"):
+    st.info(
 
-        st.markdown("""
+        f"""
 
-### Penjelasan
+**Dataset :** {dataset_pilih}
 
-Visualisasi Word Cloud digunakan untuk menampilkan kata-kata yang
-paling sering muncul pada komentar berdasarkan label sentimen.
+**Sentimen :** {label_pilih}
 
-Semakin besar ukuran suatu kata pada Word Cloud,
-semakin sering kata tersebut muncul pada komentar.
+**Jumlah Komentar :** {len(data):,}
 
-Tahapan yang dilakukan:
+**Jumlah Kata :** {len(semua_kata):,}
 
-- Dataset dipilih (YouTube atau TikTok)
-- Data difilter berdasarkan label sentimen
-- Dilakukan penghapusan stopwords
-- Word Cloud dibentuk menggunakan library **WordCloud**
-- Frekuensi kata dihitung menggunakan **Counter**
-- Ditampilkan grafik Top 20 kata
-- Hasil dapat diunduh dalam format CSV maupun Excel
+**Jumlah Kata Unik :** {len(counter):,}
 
-""")
+**Kata Terbanyak :** {top20.iloc[0]['Kata']}
 
-    st.success("✅ Visualisasi Word Cloud berhasil dibuat.")
+**Frekuensi :** {top20.iloc[0]['Frekuensi']}
 
-    # ============================================================
-    # END WORD CLOUD
-    # ============================================================
+"""
+
+    )
+
+    st.success(
+
+        "✅ Visualisasi Word Cloud berhasil dibuat."
+
+    )
+
 
 elif menu=="🔤 Top Words":
     st.title("Top Words")
