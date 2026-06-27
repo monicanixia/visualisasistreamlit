@@ -29,7 +29,7 @@ def load_data():
 
     lstm_yt = pd.read_excel("ringkasan_lstm_Youtube.xlsx")
     lstm_tt = pd.read_excel("ringkasan_lstm_Tiktok.xlsx")
-    token_yt = pd.read_excel("dataset_tokenizing_final_Youtube.xlsx")
+    token_yt = pd.read_excel("dataset_tokenizing_final_Youtube_.xlsx")
     token_tt = pd.read_excel("dataset_tokenizing_final_Tiktok.xlsx")
 
     return (
