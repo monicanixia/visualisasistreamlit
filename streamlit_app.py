@@ -366,7 +366,7 @@ berdasarkan **dataset** dan **label sentimen**.
     # ==========================================
 
     data = data[
-        data["sentiment_label_final"] == label_pilih
+        data["sentimen"] == label_pilih
     ].copy()
 
     st.markdown(f"## {dataset_pilih} - {label_pilih}")
