@@ -305,8 +305,72 @@ elif menu=="📊 Distribusi Label":
     )
 
 elif menu=="☁️ Word Cloud":
-    st.title("Word Cloud")
-    st.warning("Fitur akan dilengkapi pada Part 004.")
+
+    st.title("☁️ Word Cloud Sentimen")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        dataset_pilih = st.selectbox(
+            "Pilih Dataset",
+            ["YouTube", "TikTok"]
+        )
+
+    with col2:
+
+        label_pilih = st.selectbox(
+            "Pilih Sentimen",
+            ["Positif", "Netral", "Negatif"]
+        )
+
+    # =============================
+    # Memilih dataset
+    # =============================
+
+    if dataset_pilih == "YouTube":
+        data = yt
+    else:
+        data = tt
+
+    # =============================
+    # Filter berdasarkan sentimen
+    # =============================
+
+    data = data[
+        data["sentiment_label_final"] == label_pilih
+    ]
+
+    st.markdown(f"### {dataset_pilih} - {label_pilih}")
+
+    # =============================
+    # Kolom text
+    # =============================
+
+    text = " ".join(data["text"].astype(str))
+
+    # =============================
+    # WordCloud
+    # =============================
+
+    wc = WordCloud(
+        width=1600,
+        height=800,
+        background_color="white",
+        colormap="viridis",
+        max_words=250,
+        collocations=False
+    ).generate(text)
+
+    fig, ax = plt.subplots(figsize=(15,7))
+
+    ax.imshow(wc, interpolation="bilinear")
+
+    ax.axis("off")
+
+    st.pyplot(fig)
+
+    st.info(f"Jumlah komentar : {len(data)}")
 
 elif menu=="🔤 Top Words":
     st.title("Top Words")
