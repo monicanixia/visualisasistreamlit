@@ -15,7 +15,7 @@ from streamlit.components.v1 import html
 @st.cache_data
 def load_data():
 
-    yt = pd.read_excel("dataset_sentimen_final_Youtube.xlsx")
+    yt = pd.read_excel("dataset_sentimen_final_Youtube Baru.xlsx")
     tt = pd.read_excel("dataset_sentimen_final Tiktok Baru.xlsx")
 
     aspek_yt = pd.read_excel("dataset_final_aspek_Youtube.xlsx")
