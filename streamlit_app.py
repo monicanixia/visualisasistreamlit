@@ -1105,24 +1105,24 @@ sentimen menggunakan **XGBoost** dan **LSTM**.
 # Debug (boleh dihapus nanti)
     st.write("Nama file :", nama_file)
 
-    if os.path.exists(nama_file):
+if os.path.exists(nama_file):
 
-        st.image(
-            nama_file,
-            caption=f"Confusion Matrix {model_pilih} | {dataset_pilih} | {split_pilih}",
-            use_container_width=True
+    st.image(
+        nama_file,
+        caption=f"Confusion Matrix {model_pilih} | {dataset_pilih} | {split_pilih}",
+        use_container_width=True
+    )
+
+    with open(nama_file, "rb") as img:
+
+        st.download_button(
+            "⬇️ Download Confusion Matrix",
+            data=img,
+            file_name=nama_file,
+            mime="image/png"
         )
 
-         with open(nama_file, "rb") as img:
-
-            st.download_button(
-                "⬇️ Download Confusion Matrix",
-                data=img,
-                file_name=nama_file,
-                mime="image/png"
-            )
-
-    else:
+else:
 
     st.error(f"File tidak ditemukan : {nama_file}")
 
