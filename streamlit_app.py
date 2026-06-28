@@ -1123,7 +1123,7 @@ sedangkan sel lainnya menunjukkan kesalahan klasifikasi.
         "F1-Score": f1score
     }
 
-terbaik = max(nilai, key=nilai.get)
+    terbaik = max(nilai, key=nilai.get)
 
     st.success(f'''
     Dataset : **{dataset_pilih}**
@@ -1138,11 +1138,11 @@ terbaik = max(nilai, key=nilai.get)
     with st.expander("ℹ️ Keterangan Metrik"):
 
         st.markdown("""
-- **Accuracy** : Persentase prediksi yang benar.
-- **Precision** : Ketepatan prediksi pada setiap kelas.
-- **Recall** : Kemampuan model menemukan seluruh data pada suatu kelas.
-- **F1-Score** : Rata-rata harmonis antara Precision dan Recall.
-""")
+    - **Accuracy** : Persentase prediksi yang benar.
+    - **Precision** : Ketepatan prediksi pada setiap kelas.
+    - **Recall** : Kemampuan model menemukan seluruh data pada suatu kelas.
+    - **F1-Score** : Rata-rata harmonis antara Precision dan Recall.
+    """)
 
     # =====================================================
     # LANJUT KE EvaluasiModel_Full_Part5.py
