@@ -942,10 +942,6 @@ Lima kata yang paling sering muncul adalah:
 # END WORD CLOUD
 # ============================================================
 
-
-
-
-
 elif menu=="🔤 Top Words":
     st.title("Top Words")
     st.warning("Fitur akan dilengkapi pada Part 005.")
