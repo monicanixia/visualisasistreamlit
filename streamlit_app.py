@@ -974,11 +974,8 @@ sentimen menggunakan **XGBoost** dan **LSTM**.
 
     df.columns = df.columns.str.strip()
     
-    st.write(df.columns)
-    
     if "Rasio" in df.columns:
         hasil = df[df["Rasio"].astype(str).str.strip() == split_pilih].copy()
-        st.write(hasil)
     else:
         hasil = df.copy()
 
