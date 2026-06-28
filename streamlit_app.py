@@ -319,377 +319,195 @@ elif menu=="📊 Distribusi Label":
 # elif menu=="☁️ Word Cloud":
 # ============================================================
 
-elif menu == "☁️ Word Cloud":
+"""
+WordCloud_Full_Part1.py
+
+Bagian awal halaman Word Cloud untuk streamlit_app.py.
+Tempelkan mulai dari:
+    elif menu=="☁️ Word Cloud":
+"""
+
+elif menu=="☁️ Word Cloud":
 
     st.title("☁️ Word Cloud Sentimen")
 
     st.markdown("""
-Visualisasi Word Cloud digunakan untuk melihat kata yang paling sering
-muncul berdasarkan dataset dan label sentimen.
+Visualisasi Word Cloud digunakan untuk melihat kata-kata yang paling
+sering muncul berdasarkan dataset dan label sentimen.
 """)
 
-    st.divider()
-
-    # =====================================================
-    # PILIH DATASET
-    # =====================================================
+    st.markdown("---")
 
     col1, col2 = st.columns(2)
 
     with col1:
         dataset_pilih = st.selectbox(
-            "📂 Dataset",
-            ("YouTube", "TikTok")
+            "📂 Pilih Dataset",
+            ["YouTube", "TikTok"]
         )
 
     with col2:
         label_pilih = st.selectbox(
-            "😊 Label Sentimen",
-            ("Positif", "Netral", "Negatif")
+            "😊 Pilih Sentimen",
+            ["Positif", "Netral", "Negatif"]
         )
 
-    # =====================================================
-    # AMBIL DATASET
-    # =====================================================
+    st.markdown("---")
 
     if dataset_pilih == "YouTube":
-        df = word_yt.copy()
+        data = word_yt.copy()
     else:
-        df = word_tt.copy()
+        data = word_tt.copy()
 
-    # =====================================================
-    # NORMALISASI NAMA KOLOM
-    # =====================================================
-
-    df.columns = (
-        df.columns
+    data.columns = (
+        data.columns
         .str.strip()
         .str.lower()
     )
 
-    # =====================================================
-    # VALIDASI KOLOM
-    # =====================================================
-
-    kolom_wajib = [
-        "text_wordcloud",
-        "sentimen"
-    ]
-
-    kolom_hilang = [
-        c for c in kolom_wajib
-        if c not in df.columns
-    ]
-
-    if kolom_hilang:
-        st.error(
-            "Kolom tidak ditemukan: "
-            + ", ".join(kolom_hilang)
-        )
+    if "sentimen" not in data.columns:
+        st.error("Kolom 'sentimen' tidak ditemukan.")
         st.stop()
 
-    # =====================================================
-    # FILTER SENTIMEN
-    # =====================================================
+    if "text_wordcloud" not in data.columns:
+        st.error("Kolom 'text_wordcloud' tidak ditemukan.")
+        st.stop()
 
-    df["sentimen"] = (
-        df["sentimen"]
+    data["sentimen"] = (
+        data["sentimen"]
         .fillna("")
         .astype(str)
         .str.strip()
         .str.title()
     )
 
-    df = df[
-        df["sentimen"] == label_pilih
+    data = data[
+        data["sentimen"] == label_pilih
     ].copy()
 
-    if df.empty:
-        st.warning("Tidak ada data untuk sentimen ini.")
+    if data.empty:
+        st.warning(f"Tidak ada data sentimen {label_pilih}.")
         st.stop()
 
-    # =====================================================
-    # MEMBERSIHKAN TEXT
-    # =====================================================
-
-    df["text_wordcloud"] = (
-        df["text_wordcloud"]
+    text = " ".join(
+        data["text_wordcloud"]
         .fillna("")
         .astype(str)
-        .str.lower()
-        .str.replace("[", "", regex=False)
-        .str.replace("]", "", regex=False)
-        .str.replace("'", "", regex=False)
-        .str.replace('"', "", regex=False)
-        .str.replace(",", " ", regex=False)
     )
 
-    # =====================================================
-    # STOPWORDS
-    # =====================================================
+    text = (
+        text.replace("["," ")
+            .replace("]"," ")
+            .replace("'"," ")
+            .replace('"'," ")
+            .replace(","," ")
+    )
+
+    text = " ".join(text.split())
 
     stop_words = {
-        "mobil","listrik","kendaraan","indonesia","ev",
-        "yang","yg","nya","aja","nih","dong","kan",
-        "sih","deh","bro","bang","aku","saya",
-        "kami","kita","orang","jadi","buat",
-        "karena","kalau","kalo","lebih","masih",
-        "cukup","banyak","ini","itu","the","and"
+        "mobil","listrik","kendaraan","ev","indonesia",
+        "yg","nya","aja","nih","sih","bang","bro",
+        "deh","dong","kan","aku","saya","kami",
+        "kita","orang","buat","jadi","karena",
+        "kalau","kalo","lebih","masih","cukup",
+        "banyak","itu","ini","the","and"
     }
-# =====================================================
-# KAMUS KATA PER SENTIMEN
-# =====================================================
 
-    # =====================================================
-    # LANJUT KE PART 2
-    # =====================================================
-# ============================================================
-# PART 2
-# MEMBUAT FREKUENSI KATA DOMINAN
-# Tempelkan tepat setelah PART 1
-# ============================================================
+    # Part 2 akan dimulai dari pembuatan WordCloud.
+"""
+WordCloud_Full_Part2.py
 
-    # =====================================================
-    # TOKENISASI
-    # =====================================================
-
-    semua_kata = []
-
-    for kalimat in df["text_wordcloud"]:
-
-        token = str(kalimat).split()
-
-        token = [
-            t.strip()
-            for t in token
-            if len(t.strip()) > 2
-            and t.strip() not in stop_words
-        ]
-
-    semua_kata.extend(token)
-
-    # =====================================================
-    # HITUNG FREKUENSI
-    # =====================================================
-
-# =====================================================
-# FREKUENSI BERDASARKAN SENTIMEN
-# =====================================================
-
-    from collections import Counter
-
-    def hitung_counter(df_sentimen):
-
-        kata = []
-
-        for kalimat in df_sentimen["text_wordcloud"]:
-
-            token = str(kalimat).split()
-
-            token = [
-
-                t.strip()
-
-                for t in token
-
-                if len(t.strip()) > 2
-
-                and t.strip() not in stop_words
-
-            ]
-
-            kata.extend(token)
-
-        return Counter(kata)
-
-# Dataset lengkap
-
-    dataset_semua = word_yt.copy() if dataset_pilih == "YouTube" else word_tt.copy()
-
-    dataset_semua["sentimen"] = (
-        dataset_semua["sentimen"]
-        .fillna("")
-        .astype(str)
-        .str.strip()
-        .str.title()
-    )
-
-    counter_pos = hitung_counter(
-        dataset_semua[
-            dataset_semua["sentimen"] == "Positif"
-        ]
-    )
-
-    counter_net = hitung_counter(
-        dataset_semua[
-            dataset_semua["sentimen"] == "Netral"
-        ]
-    )
-
-    counter_neg = hitung_counter(
-        dataset_semua[
-            dataset_semua["sentimen"] == "Negatif"
-        ]
-    )
-
-    if label_pilih == "Positif":
-
-        utama = counter_pos
-        lain1 = counter_net
-        lain2 = counter_neg
-
-    elif label_pilih == "Netral":
-
-        utama = counter_net
-        lain1 = counter_pos
-        lain2 = counter_neg
-
-    else:
-
-        utama = counter_neg
-        lain1 = counter_pos
-        lain2 = counter_net
-
-    kata_dominan = {}
-
-    for kata, freq in utama.items():
-
-        if freq > lain1.get(kata,0) and freq > lain2.get(kata,0):
-
-            kata_dominan[kata] = freq
-
-    counter = Counter(kata_dominan)
-
-top_word = (
-    pd.DataFrame(
-        counter.items(),
-        columns=[
-            "Kata",
-            "Frekuensi"
-        ]
-    )
-    .sort_values(
-        "Frekuensi",
-        ascending=False
-    )
-    .reset_index(drop=True)
-)
-
-if top_word.empty:
-
-    st.warning("Tidak ada kata yang dapat divisualisasikan.")
-
-    st.stop()
-    # =====================================================
-    # MEMBANGUN TEKS WORD CLOUD
-    # =====================================================
-
-    text_wordcloud = " ".join(
-
-        [
-
-            (kata + " ") * int(freq)
-
-            for kata, freq in kata_dominan.items()
-
-        ]
-
-    )
+Lanjutan setelah WordCloud_Full_Part1.py
+"""
 
     # =====================================================
     # MEMBUAT WORD CLOUD
     # =====================================================
 
     wc = WordCloud(
-
         width=1800,
-
         height=900,
-
         background_color="white",
-
         stopwords=stop_words,
-
         max_words=200,
-
         collocations=False,
-
         contour_width=1,
-
         contour_color="steelblue",
-
         colormap="viridis",
-
         random_state=42
+    ).generate(text)
 
-    ).generate(text_wordcloud)
+    st.subheader(f"☁️ Word Cloud {dataset_pilih} - {label_pilih}")
 
-    # =====================================================
-    # TAMPILKAN WORD CLOUD
-    # =====================================================
-
-    st.subheader(
-        f"☁️ Word Cloud {dataset_pilih} - {label_pilih}"
-    )
-
-    fig, ax = plt.subplots(figsize=(18, 9))
-
-    ax.imshow(
-        wc,
-        interpolation="bilinear"
-    )
-
+    fig, ax = plt.subplots(figsize=(18,9))
+    ax.imshow(wc, interpolation="bilinear")
     ax.axis("off")
+    st.pyplot(fig, use_container_width=True)
+    plt.close(fig)
 
-    st.pyplot(
-        fig,
-        use_container_width=True
+    st.markdown("---")
+
+    # =====================================================
+    # HITUNG FREKUENSI KATA
+    # =====================================================
+
+    from collections import Counter
+
+    semua_kata = []
+
+    for kalimat in data["text_wordcloud"]:
+
+        tokens = (
+            str(kalimat)
+            .lower()
+            .replace("["," ")
+            .replace("]"," ")
+            .replace("'"," ")
+            .replace(","," ")
+            .split()
+        )
+
+        semua_kata.extend(
+            [
+                t for t in tokens
+                if len(t) > 2
+                and t not in stop_words
+            ]
+        )
+
+    counter = Counter(semua_kata)
+
+    top_word = (
+        pd.DataFrame(
+            counter.items(),
+            columns=["Kata","Frekuensi"]
+        )
+        .sort_values(
+            "Frekuensi",
+            ascending=False
+        )
+        .reset_index(drop=True)
     )
 
-    # =====================================================
-    # STATISTIK
-    # =====================================================
+    if top_word.empty:
+        st.warning("Tidak ada kata yang dapat ditampilkan.")
+        st.stop()
 
-    st.divider()
+    c1,c2,c3 = st.columns(3)
 
-    c1, c2, c3 = st.columns(3)
+    c1.metric("Jumlah Komentar", len(data))
+    c2.metric("Jumlah Kata", len(semua_kata))
+    c3.metric("Jumlah Kata Unik", len(counter))
 
-    c1.metric(
-        "Jumlah Komentar",
-        len(df)
-    )
+    st.markdown("---")
 
-    c2.metric(
-        "Jumlah Kata",
-        len(semua_kata)
-    )
+    top20 = top_word.head(20)
 
-    c3.metric(
-        "Kata Unik",
-        len(counter)
-    )
+    st.subheader("📈 Top 20 Kata")
 
-    # =====================================================
-    # LANJUT KE PART 3
-    # =====================================================
-# ============================================================
-# PART 3
-# GRAFIK, TABEL, DAN DOWNLOAD
-# Tempelkan tepat setelah PART 2
-# ============================================================
-
-    st.divider()
-
-    # =====================================================
-    # TOP 20 KATA
-    # =====================================================
-
-    top10 = top_word.head(10).copy()
-
-    st.subheader("📈 Top 10 Kata")
-
-    fig_bar = px.bar(
-        top10,
+    fig2 = px.bar(
+        top20,
         x="Frekuensi",
         y="Kata",
         orientation="h",
@@ -698,49 +516,51 @@ if top_word.empty:
         color_continuous_scale="viridis"
     )
 
-    fig_bar.update_layout(
-        title=f"Top 10 Kata ({dataset_pilih} - {label_pilih})",
-        height=650,
-        yaxis=dict(categoryorder="total ascending"),
-        coloraxis_showscale=False
+    fig2.update_layout(
+        title=f"Top 20 Kata ({dataset_pilih} - {label_pilih})",
+        height=700,
+        coloraxis_showscale=False,
+        yaxis=dict(categoryorder="total ascending")
     )
 
-    fig_bar.update_traces(
-        textposition="outside"
-    )
+    fig2.update_traces(textposition="outside")
 
-    st.plotly_chart(
-        fig_bar,
-        use_container_width=True
-    )
+    st.plotly_chart(fig2, use_container_width=True)
 
-    st.divider()
+    # Part 3 dimulai dari tabel, download, dan insight.
+"""
+WordCloud_Full_Part3.py
+
+Lanjutan setelah WordCloud_Full_Part2.py
+"""
 
     # =====================================================
-    # TABEL TOP 20
+    # TABEL TOP 20 KATA
     # =====================================================
 
-    st.subheader("📋 Tabel Frekuensi Kata")
+    st.subheader("📋 Tabel Top 20 Kata")
 
-    tampil = top10.copy()
-
-    tampil.index = tampil.index + 1
-    tampil.index.name = "No"
+    tampil_top = top20.copy()
+    tampil_top.index = tampil_top.index + 1
+    tampil_top.index.name = "No"
 
     st.dataframe(
-        tampil,
+        tampil_top,
         use_container_width=True,
-        height=500
+        hide_index=False,
+        height=450
     )
 
-    st.divider()
+    st.markdown("---")
 
     # =====================================================
     # PENCARIAN KATA
     # =====================================================
 
+    st.subheader("🔍 Cari Kata")
+
     keyword = st.text_input(
-        "🔍 Cari Kata",
+        "Masukkan kata yang ingin dicari",
         placeholder="Contoh: baterai"
     )
 
@@ -755,48 +575,31 @@ if top_word.empty:
         ]
 
         if hasil.empty:
-
             st.warning("Kata tidak ditemukan.")
-
         else:
-
-            st.success(
-                f"Ditemukan {len(hasil)} kata."
-            )
-
+            st.success(f"Ditemukan {len(hasil)} kata.")
             st.dataframe(
                 hasil,
                 use_container_width=True,
                 hide_index=True
             )
 
-    st.divider()
+    st.markdown("---")
 
     # =====================================================
     # DOWNLOAD TOP WORD
     # =====================================================
 
-    csv = top10.to_csv(
-        index=False
-    ).encode("utf-8")
+    csv = top20.to_csv(index=False).encode("utf-8")
 
     st.download_button(
-        label="⬇️ Download Top 10 Kata",
+        label="⬇️ Download Top 20 Kata",
         data=csv,
         file_name=f"Top20_{dataset_pilih}_{label_pilih}.csv",
         mime="text/csv"
     )
 
-    # =====================================================
-    # LANJUT KE PART 4
-    # =====================================================
-# ============================================================
-# PART 4
-# DISTRIBUSI SENTIMEN, DATASET FILTER, DAN INSIGHT
-# Tempelkan tepat setelah PART 3
-# ============================================================
-
-    st.divider()
+    st.markdown("---")
 
     # =====================================================
     # DISTRIBUSI SENTIMEN
@@ -804,104 +607,324 @@ if top_word.empty:
 
     st.subheader("📊 Distribusi Sentimen")
 
-    sumber = word_yt if dataset_pilih == "YouTube" else word_tt
-
     distribusi = (
-        sumber["sentimen"]
-        .fillna("")
-        .astype(str)
-        .str.title()
+        (word_yt if dataset_pilih == "YouTube" else word_tt)["sentimen"]
         .value_counts()
-        .reindex(["Positif", "Netral", "Negatif"], fill_value=0)
         .rename_axis("Sentimen")
         .reset_index(name="Jumlah")
     )
 
-    fig_pie = px.pie(
+    fig3 = px.pie(
         distribusi,
         names="Sentimen",
         values="Jumlah",
         hole=0.45,
         color="Sentimen",
         color_discrete_map={
-            "Positif": "#2ecc71",
-            "Netral": "#f1c40f",
-            "Negatif": "#e74c3c"
+            "Positif":"#2ecc71",
+            "Netral":"#f1c40f",
+            "Negatif":"#e74c3c"
         }
     )
 
-    fig_pie.update_layout(
-        height=500,
-        legend_title="Sentimen"
-    )
+    fig3.update_layout(height=500)
 
     st.plotly_chart(
-        fig_pie,
+        fig3,
         use_container_width=True
     )
 
-    st.divider()
+    st.markdown("---")
 
     # =====================================================
     # DATASET HASIL FILTER
     # =====================================================
 
-    with st.expander("📄 Lihat Dataset Hasil Filter", expanded=False):
+    with st.expander("📄 Dataset Hasil Filter"):
 
         st.dataframe(
-            df,
+            data,
             use_container_width=True,
             hide_index=True,
             height=450
         )
 
-    csv_filter = df.to_csv(index=False).encode("utf-8")
+    csv_filter = data.to_csv(index=False).encode("utf-8")
 
     st.download_button(
-        label="⬇️ Download Dataset Hasil Filter",
+        label="⬇️ Download Dataset Filter",
         data=csv_filter,
         file_name=f"Dataset_{dataset_pilih}_{label_pilih}.csv",
         mime="text/csv"
     )
 
-    st.divider()
-
-    # =====================================================
-    # INSIGHT SINGKAT
-    # =====================================================
-
-    st.subheader("📝 Ringkasan")
-
-    kata_utama = top10.iloc[0]["Kata"]
-    frekuensi_utama = int(top10.iloc[0]["Frekuensi"])
+    st.markdown("---")
 
     st.info(f"""
-Dataset : **{dataset_pilih}**
+**Dataset:** {dataset_pilih}
 
-Sentimen : **{label_pilih}**
+**Sentimen:** {label_pilih}
 
-Jumlah Komentar : **{len(df):,}**
+**Jumlah Komentar:** {len(data):,}
 
-Jumlah Kata : **{len(semua_kata):,}**
+**Jumlah Kata:** {len(semua_kata):,}
 
-Jumlah Kata Unik : **{len(counter):,}**
+**Jumlah Kata Unik:** {len(counter):,}
 
-Kata yang paling sering muncul adalah **{kata_utama}**
-sebanyak **{frekuensi_utama}** kali.
+**Kata Terbanyak:** {top20.iloc[0]["Kata"]}
+
+**Frekuensi:** {top20.iloc[0]["Frekuensi"]}
 """)
 
     st.success("✅ Visualisasi Word Cloud berhasil dibuat.")
 
-    # =====================================================
-    # LANJUT KE PART 5
-    # =====================================================
-# ============================================================
-# PART 5
-# PENUTUP HALAMAN WORD CLOUD
-# Tempelkan tepat setelah PART 4
-# ============================================================
+    # Part 4:
+    # Optimasi agar hanya menampilkan kata yang dominan
+    # pada sentimen yang dipilih (recommended).
+"""
 
-    st.divider()
+WordCloud_Full_Part4.py
+
+
+
+Optimasi Word Cloud agar lebih representatif terhadap sentimen.
+
+Letakkan setelah proses filtering data dan SEBELUM membuat WordCloud.
+
+Bagian ini menggantikan proses pembentukan `semua_kata`.
+
+"""
+
+
+
+    # =====================================================
+
+    # TOKENISASI & FREKUENSI PER SENTIMEN
+
+    # =====================================================
+
+
+
+    from collections import Counter
+
+
+
+    def ekstrak_kata(df):
+
+
+
+        kata = []
+
+
+
+        for kalimat in df["text_wordcloud"].fillna("").astype(str):
+
+
+
+            token = (
+
+                kalimat.lower()
+
+                .replace("["," ")
+
+                .replace("]"," ")
+
+                .replace("'"," ")
+
+                .replace(","," ")
+
+                .split()
+
+            )
+
+
+
+            token = [
+
+                t for t in token
+
+                if len(t) > 2
+
+                and t not in stop_words
+
+            ]
+
+
+
+            kata.extend(token)
+
+
+
+        return Counter(kata)
+
+
+
+    yt_counter = ekstrak_kata(word_yt)
+
+    tt_counter = ekstrak_kata(word_tt)
+
+
+
+    gabung = word_yt if dataset_pilih == "YouTube" else word_tt
+
+
+
+    pos_counter = ekstrak_kata(
+
+        gabung[gabung["sentimen"]=="Positif"]
+
+    )
+
+
+
+    net_counter = ekstrak_kata(
+
+        gabung[gabung["sentimen"]=="Netral"]
+
+    )
+
+
+
+    neg_counter = ekstrak_kata(
+
+        gabung[gabung["sentimen"]=="Negatif"]
+
+    )
+
+
+
+    if label_pilih == "Positif":
+
+        target = pos_counter
+
+        lawan1 = net_counter
+
+        lawan2 = neg_counter
+
+    elif label_pilih == "Netral":
+
+        target = net_counter
+
+        lawan1 = pos_counter
+
+        lawan2 = neg_counter
+
+    else:
+
+        target = neg_counter
+
+        lawan1 = pos_counter
+
+        lawan2 = net_counter
+
+
+
+    kata_dominan = {}
+
+
+
+    for kata, freq in target.items():
+
+
+
+        if freq >= max(lawan1.get(kata,0), lawan2.get(kata,0)):
+
+            kata_dominan[kata] = freq
+
+
+
+    if len(kata_dominan) == 0:
+
+        kata_dominan = dict(target)
+
+
+
+    text = " ".join(
+
+        [
+
+            (kata + " ") * freq
+
+            for kata, freq in kata_dominan.items()
+
+        ]
+
+    )
+
+
+
+    semua_kata = []
+
+
+
+    for kata, freq in kata_dominan.items():
+
+        semua_kata.extend([kata]*freq)
+
+
+
+    counter = Counter(semua_kata)
+
+
+
+    top_word = (
+
+        pd.DataFrame(
+
+            counter.items(),
+
+            columns=["Kata","Frekuensi"]
+
+        )
+
+        .sort_values(
+
+            "Frekuensi",
+
+            ascending=False
+
+        )
+
+        .reset_index(drop=True)
+
+    )
+
+
+
+    st.info(
+
+        "ℹ️ Word Cloud menggunakan kata yang dominan pada sentimen yang dipilih sehingga kata yang lebih identik dengan sentimen lain akan dikurangi."
+
+    )
+
+"""
+WordCloud_Full_Part5.py
+
+Bagian penutup halaman Word Cloud.
+Gunakan setelah seluruh visualisasi selesai.
+"""
+
+    # =====================================================
+    # INSIGHT OTOMATIS
+    # =====================================================
+
+    st.markdown("---")
+    st.subheader("📝 Insight Otomatis")
+
+    if not top_word.empty:
+
+        lima_besar = ", ".join(top_word.head(5)["Kata"].tolist())
+
+        st.success(
+            f"""
+Pada dataset **{dataset_pilih}** dengan sentimen **{label_pilih}**,
+kata yang paling dominan adalah **{top_word.iloc[0]['Kata']}**
+sebanyak **{int(top_word.iloc[0]['Frekuensi'])}** kemunculan.
+
+Lima kata yang paling sering muncul:
+**{lima_besar}**
+"""
+        )
 
     # =====================================================
     # DOWNLOAD GAMBAR WORD CLOUD
@@ -923,59 +946,99 @@ sebanyak **{frekuensi_utama}** kali.
     st.download_button(
         label="🖼️ Download Word Cloud (PNG)",
         data=buffer,
-        file_name=f"WordCloud_{dataset_pilih}_{label_pilih}.png",
+        file_name=f"wordcloud_{dataset_pilih}_{label_pilih}.png",
         mime="image/png"
     )
 
-    st.divider()
-
-    # =====================================================
-    # INSIGHT OTOMATIS
-    # =====================================================
-
-    st.subheader("💡 Insight Word Cloud")
-
-    lima_kata = ", ".join(top10["Kata"].head(5).tolist())
-
-    st.success(f"""
-Berdasarkan visualisasi Word Cloud pada dataset **{dataset_pilih}**
-dengan label sentimen **{label_pilih}**, kata yang paling dominan adalah
-**{kata_utama}** dengan frekuensi **{frekuensi_utama}** kemunculan.
-
-Lima kata yang paling sering muncul adalah:
-**{lima_kata}**.
-""")
-
-    st.divider()
+    st.markdown("---")
 
     # =====================================================
     # KETERANGAN
     # =====================================================
 
-    with st.expander("ℹ️ Keterangan Visualisasi"):
+    with st.expander("ℹ️ Keterangan"):
 
         st.markdown("""
-- Word Cloud dibuat dari kolom **text_wordcloud**.
-- Data telah difilter berdasarkan dataset dan label sentimen.
-- Stopwords dihapus sebelum proses visualisasi.
-- Frekuensi kata dihitung menggunakan **Counter**.
-- Grafik Top 20 berasal dari hasil frekuensi yang sama dengan Word Cloud.
-- Hasil dapat diunduh dalam format CSV maupun PNG.
-""")
+Word Cloud dibuat berdasarkan komentar yang telah difilter sesuai
+dataset dan label sentimen.
 
-    st.divider()
+Versi optimasi ini memprioritaskan kata yang lebih dominan pada
+sentimen yang dipilih sehingga visualisasi menjadi lebih representatif.
+
+Visualisasi ini digunakan sebagai analisis deskriptif terhadap
+kecenderungan kata pada masing-masing sentimen.
+""")
 
     # =====================================================
     # FOOTER
     # =====================================================
 
     st.caption(
-        "Dashboard Analisis Sentimen Mobil Listrik Indonesia | Word Cloud"
+        "Analisis Sentimen Mobil Listrik Indonesia • Streamlit Dashboard"
     )
 
 # ============================================================
-# END WORD CLOUD
+# WORDCLOUD_FULL_PART6.py
+# OPSIONAL - PENYEMPURNAAN HALAMAN WORD CLOUD
+# Tempelkan setelah WordCloud_Full_Part5.py
 # ============================================================
+
+    st.divider()
+
+    # =====================================================
+    # TOP 30 KATA
+    # =====================================================
+
+    st.subheader("📌 Top 30 Kata")
+
+    top30 = top_word.head(30).copy()
+
+    col1, col2 = st.columns([2, 1])
+
+    with col1:
+        st.dataframe(
+            top30,
+            use_container_width=True,
+            hide_index=True,
+            height=500
+        )
+
+    with col2:
+        st.metric("Top Kata", top30.iloc[0]["Kata"])
+        st.metric("Frekuensi", int(top30.iloc[0]["Frekuensi"]))
+        st.metric("Jumlah Top Kata", len(top30))
+
+    st.divider()
+
+    # =====================================================
+    # DOWNLOAD TOP 30
+    # =====================================================
+
+    csv30 = top30.to_csv(index=False).encode("utf-8")
+
+    st.download_button(
+        label="⬇️ Download Top 30 Kata",
+        data=csv30,
+        file_name=f"Top30_{dataset_pilih}_{label_pilih}.csv",
+        mime="text/csv"
+    )
+
+    st.divider()
+
+    # =====================================================
+    # INFORMASI DATASET
+    # =====================================================
+
+    with st.expander("ℹ️ Informasi Dataset"):
+
+        st.write(f"Dataset : **{dataset_pilih}**")
+        st.write(f"Sentimen : **{label_pilih}**")
+        st.write(f"Jumlah komentar : **{len(df):,}**")
+        st.write(f"Jumlah kata : **{len(semua_kata):,}**")
+        st.write(f"Jumlah kata unik : **{len(counter):,}**")
+
+    st.success("✅ Halaman Word Cloud selesai dimuat.")
+
 
 elif menu=="🔤 Top Words":
     st.title("Top Words")
