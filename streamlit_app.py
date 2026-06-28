@@ -430,7 +430,8 @@ sering muncul berdasarkan dataset dan label sentimen.
         "tari",
         "byd",
         "pribadi",
-        "pakai"
+        "pakai",
+        "jalan"
     }
 
     # Part 2 akan dimulai dari pembuatan WordCloud.
