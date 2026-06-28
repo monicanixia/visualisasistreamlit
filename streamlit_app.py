@@ -696,8 +696,10 @@ dataset dan label sentimen.
     "oke",
     "ok",
     "mantap",
-    "sip"
-    "tari"
+    "sip",
+    "kembang",
+    "tari",
+    "byd"
     }
 
     # =====================================================
