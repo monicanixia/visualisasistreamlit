@@ -407,11 +407,6 @@ sering muncul berdasarkan dataset dan label sentimen.
     }
 
     # Part 2 akan dimulai dari pembuatan WordCloud.
-"""
-WordCloud_Full_Part2.py
-
-Lanjutan setelah WordCloud_Full_Part1.py
-"""
 
     # =====================================================
     # MEMBUAT WORD CLOUD
@@ -520,11 +515,6 @@ Lanjutan setelah WordCloud_Full_Part1.py
     st.plotly_chart(fig2, use_container_width=True)
 
     # Part 3 dimulai dari tabel, download, dan insight.
-"""
-WordCloud_Full_Part3.py
-
-Lanjutan setelah WordCloud_Full_Part2.py
-"""
 
     # =====================================================
     # TABEL TOP 20 KATA
@@ -673,19 +663,6 @@ Lanjutan setelah WordCloud_Full_Part2.py
     # Part 4:
     # Optimasi agar hanya menampilkan kata yang dominan
     # pada sentimen yang dipilih (recommended).
-"""
-
-WordCloud_Full_Part4.py
-
-
-
-Optimasi Word Cloud agar lebih representatif terhadap sentimen.
-
-Letakkan setelah proses filtering data dan SEBELUM membuat WordCloud.
-
-Bagian ini menggantikan proses pembentukan `semua_kata`.
-
-"""
 
 
 
@@ -888,13 +865,6 @@ Bagian ini menggantikan proses pembentukan `semua_kata`.
         "ℹ️ Word Cloud menggunakan kata yang dominan pada sentimen yang dipilih sehingga kata yang lebih identik dengan sentimen lain akan dikurangi."
 
     )
-
-"""
-WordCloud_Full_Part5.py
-
-Bagian penutup halaman Word Cloud.
-Gunakan setelah seluruh visualisasi selesai.
-"""
 
     # =====================================================
     # INSIGHT OTOMATIS
