@@ -12,6 +12,8 @@ from wordcloud import WordCloud
 from PIL import Image
 from streamlit.components.v1 import html
 
+from collections import Counter
+
 @st.cache_data
 def load_data():
 
@@ -470,8 +472,6 @@ neutral_words = {
 # MEMBUAT FREKUENSI KATA DOMINAN
 # Tempelkan tepat setelah PART 1
 # ============================================================
-
-    from collections import Counter
 
     # =====================================================
     # TOKENISASI
