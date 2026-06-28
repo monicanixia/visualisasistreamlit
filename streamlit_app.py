@@ -404,7 +404,7 @@ sering muncul berdasarkan dataset dan label sentimen.
         "deh","dong","kan","aku","saya","kami",
         "kita","orang","buat","jadi","karena",
         "kalau","kalo","lebih","masih","cukup",
-        "banyak","itu","ini","the","and"
+        "banyak","itu","ini","the","and",
         "tarik",
         "moga",
         "semoga",
