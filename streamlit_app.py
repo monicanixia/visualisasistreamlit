@@ -319,14 +319,6 @@ elif menu=="📊 Distribusi Label":
 # elif menu=="☁️ Word Cloud":
 # ============================================================
 
-"""
-WordCloud_Full_Part1.py
-
-Bagian awal halaman Word Cloud untuk streamlit_app.py.
-Tempelkan mulai dari:
-    elif menu=="☁️ Word Cloud":
-"""
-
 elif menu=="☁️ Word Cloud":
 
     st.title("☁️ Word Cloud Sentimen")
