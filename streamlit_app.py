@@ -669,12 +669,34 @@ dataset dan label sentimen.
     # =====================================================
 
     stop_words = {
-        "mobil","listrik","kendaraan","indonesia","ev",
-        "yg","nya","aja","nih","kan","dong","sih",
-        "aku","saya","kami","kita","orang",
-        "buat","jadi","karena","kalau","kalo",
-        "lebih","masih","cukup","banyak",
-        "itu","ini","the","and"
+    "mobil","listrik","kendaraan","indonesia","ev",
+    "yg","nya","aja","nih","kan","dong","sih",
+    "aku","saya","kami","kita","orang",
+    "buat","jadi","karena","kalau","kalo",
+    "lebih","masih","cukup","banyak",
+    "itu","ini","the","and",
+
+    "tarik",
+    "moga",
+    "semoga",
+    "banget",
+    "bgt",
+    "deh",
+    "lah",
+    "nih",
+    "aja",
+    "dong",
+    "kayak",
+    "ga",
+    "gak",
+    "nggak",
+    "ya",
+    "yah",
+    "iya",
+    "oke",
+    "ok",
+    "mantap",
+    "sip"
     }
 
     # =====================================================
