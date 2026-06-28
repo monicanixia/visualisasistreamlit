@@ -1089,21 +1089,32 @@ sentimen menggunakan **XGBoost** dan **LSTM**.
 
     split_file = split_pilih.replace(":", "_")
 
+# Samakan dengan nama file di GitHub
+    if dataset_pilih == "YouTube":
+        dataset_file = "Youtube"
+    else:
+        dataset_file = "Tiktok"
+
     if model_pilih == "XGBoost":
         prefix = "cm_xgboost"
     else:
         prefix = "cm_lstm"
 
-    nama_file = f"{prefix}_{split_file}_{dataset_pilih}.png"
+    nama_file = f"{prefix}_{split_file}_{dataset_file}.png"
 
-    try:
+# Debug (boleh dihapus nanti)
+    st.write("Nama file :", nama_file)
+
+    if os.path.exists(nama_file):
+
         st.image(
             nama_file,
             caption=f"Confusion Matrix {model_pilih} | {dataset_pilih} | {split_pilih}",
             use_container_width=True
         )
 
-        with open(nama_file, "rb") as img:
+         with open(nama_file, "rb") as img:
+
             st.download_button(
                 "⬇️ Download Confusion Matrix",
                 data=img,
@@ -1111,10 +1122,9 @@ sentimen menggunakan **XGBoost** dan **LSTM**.
                 mime="image/png"
             )
 
-    except Exception:
-        st.warning(
-            f"File {nama_file} tidak ditemukan di repository."
-        )
+    else:
+
+    st.error(f"File tidak ditemukan : {nama_file}")
 
     st.divider()
 
