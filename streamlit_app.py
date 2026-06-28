@@ -1116,20 +1116,24 @@ sedangkan sel lainnya menunjukkan kesalahan klasifikasi.
 
     st.subheader("🎯 Ringkasan Hasil")
 
-    terbaik = metric_df.loc[
-        metric_df["Nilai"].idxmax(),
-        "Metrik"
-    ]
+    nilai = {
+        "Accuracy": accuracy,
+        "Precision": precision,
+        "Recall": recall,
+        "F1-Score": f1score
+    }
+
+terbaik = max(nilai, key=nilai.get)
 
     st.success(f'''
-Dataset : **{dataset_pilih}**
+    Dataset : **{dataset_pilih}**
 
-Model : **{model_pilih}**
+    Model : **{model_pilih}**
 
-Split : **{split_pilih}**
+    Split : **{split_pilih}**
 
-Metrik dengan nilai tertinggi adalah **{terbaik}**.
-''')
+    Metrik dengan nilai tertinggi adalah **{terbaik}**.
+    ''')
 
     with st.expander("ℹ️ Keterangan Metrik"):
 
