@@ -440,30 +440,6 @@ muncul berdasarkan dataset dan label sentimen.
 # KAMUS KATA PER SENTIMEN
 # =====================================================
 
-    positive_words = {
-    "bagus","baik","mantap","keren","hemat",
-    "murah","cepat","nyaman","ramah","modern",
-    "maju","berkembang","praktis","efisien",
-    "unggul","canggih","aman","stabil",
-    "mudah","dukung","suka","cocok",
-    "lancar","irit","jujur","moga"
-    }
-
-    negative_words = {
-    "mahal","rusak","buruk","jelek","ribet",
-    "takut","ragu","boros","mogok","bahaya",
-    "kecewa","parah","gagal","lambat",
-    "bekas","limbah","masalah","error"
-    }
-
-    neutral_words = {
-    "baterai","charging","stasiun",
-    "teknologi","kendara","kendaraan",
-    "pasar","industri","pemerintah",
-    "fitur","jarak","motor",
-    "energi","subsidi"
-    }
-
     # =====================================================
     # LANJUT KE PART 2
     # =====================================================
@@ -490,75 +466,135 @@ muncul berdasarkan dataset dan label sentimen.
             and t.strip() not in stop_words
         ]
 
-    # ===================================================
-    # FILTER BERDASARKAN SENTIMEN
-    # ===================================================
-
-    if label_pilih == "Positif":
-
-        token = [
-
-            x for x in token
-
-            if x in positive_words
-
-        ]
-
-    elif label_pilih == "Negatif":
-
-        token = [
-
-            x for x in token
-
-            if x in negative_words
-
-        ]
-
-    else:
-
-        token = [
-
-            x for x in token
-
-            if x in neutral_words
-
-        ]
-
     semua_kata.extend(token)
 
     # =====================================================
     # HITUNG FREKUENSI
     # =====================================================
 
-    counter = Counter(semua_kata)
+# =====================================================
+# FREKUENSI BERDASARKAN SENTIMEN
+# =====================================================
+
+    from collections import Counter
+
+    def hitung_counter(df_sentimen):
+
+        kata = []
+
+        for kalimat in df_sentimen["text_wordcloud"]:
+
+            token = str(kalimat).split()
+
+            token = [
+
+                t.strip()
+
+                for t in token
+
+                if len(t.strip()) > 2
+
+                and t.strip() not in stop_words
+
+            ]
+
+            kata.extend(token)
+
+        return Counter(kata)
+
+# Dataset lengkap
+
+    dataset_semua = word_yt.copy() if dataset_pilih == "YouTube" else word_tt.copy()
+
+    dataset_semua["sentimen"] = (
+        dataset_semua["sentimen"]
+        .fillna("")
+        .astype(str)
+        .str.strip()
+        .str.title()
+    )
+
+    counter_pos = hitung_counter(
+        dataset_semua[
+            dataset_semua["sentimen"] == "Positif"
+        ]
+    )
+
+    counter_net = hitung_counter(
+        dataset_semua[
+            dataset_semua["sentimen"] == "Netral"
+        ]
+    )
+
+    counter_neg = hitung_counter(
+        dataset_semua[
+            dataset_semua["sentimen"] == "Negatif"
+        ]
+    )
+
+    if label_pilih == "Positif":
+
+        utama = counter_pos
+        lain1 = counter_net
+        lain2 = counter_neg
+
+    elif label_pilih == "Netral":
+
+        utama = counter_net
+        lain1 = counter_pos
+        lain2 = counter_neg
+
+    else:
+
+        utama = counter_neg
+        lain1 = counter_pos
+        lain2 = counter_net
+
+    kata_dominan = {}
+
+    for kata, freq in utama.items():
+
+        if freq > lain1.get(kata,0) and freq > lain2.get(kata,0):
+
+            kata_dominan[kata] = freq
+
+    counter = Counter(kata_dominan)
 
     top_word = (
         pd.DataFrame(
             counter.items(),
-            columns=["Kata", "Frekuensi"]
+            columns=[
+                "Kata",
+                "Frekuensi"
+            ]
         )
         .sort_values(
-            by="Frekuensi",
+            "Frekuensi",
             ascending=False
         )
         .reset_index(drop=True)
     )
 
-    if top_word.empty:
+        if top_word.empty:
 
-        st.warning("Tidak ada kata yang dapat divisualisasikan.")
+            st.warning("Tidak ada kata yang dapat divisualisasikan.")
 
-        st.stop()
+            st.stop()
 
     # =====================================================
     # MEMBANGUN TEKS WORD CLOUD
     # =====================================================
 
     text_wordcloud = " ".join(
+
         [
-            ((kata + " ") * int(freq))
-            for kata, freq in counter.items()
+
+            (kata + " ") * int(freq)
+
+            for kata, freq in kata_dominan.items()
+
         ]
+
     )
 
     # =====================================================
