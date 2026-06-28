@@ -428,7 +428,9 @@ sering muncul berdasarkan dataset dan label sentimen.
         "sip",
         "kembang",
         "tari",
-        "byd"
+        "byd",
+        "pribadi",
+        "pakai"
     }
 
     # Part 2 akan dimulai dari pembuatan WordCloud.
