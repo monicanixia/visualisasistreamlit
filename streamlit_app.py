@@ -585,9 +585,505 @@ sering muncul berdasarkan dataset dan label sentimen.
 
     
 
+# ============================================================
+# TOPWORDS_FULL_PART1.py
+# Tempelkan menggantikan:
+# elif menu=="🔤 Top Words":
+# ============================================================
+
 elif menu=="🔤 Top Words":
-    st.title("Top Words")
-    st.warning("Fitur akan dilengkapi pada Part 005.")
+
+    st.title("🔤 Top Words")
+
+    st.markdown("""
+Halaman ini menampilkan kata yang paling sering muncul berdasarkan
+dataset dan label sentimen.
+""")
+
+    st.divider()
+
+    # =====================================================
+    # PILIH DATASET DAN SENTIMEN
+    # =====================================================
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        dataset_pilih = st.selectbox(
+            "📂 Pilih Dataset",
+            ["YouTube", "TikTok"],
+            key="tw_dataset"
+        )
+
+    with col2:
+        label_pilih = st.selectbox(
+            "😊 Pilih Sentimen",
+            ["Positif", "Netral", "Negatif"],
+            key="tw_sentimen"
+        )
+
+    st.divider()
+
+    # =====================================================
+    # AMBIL DATASET
+    # =====================================================
+
+    if dataset_pilih == "YouTube":
+        data = word_yt.copy()
+    else:
+        data = word_tt.copy()
+
+    data.columns = (
+        data.columns
+        .str.strip()
+        .str.lower()
+    )
+
+    if "text_wordcloud" not in data.columns:
+        st.error("Kolom text_wordcloud tidak ditemukan.")
+        st.stop()
+
+    if "sentimen" not in data.columns:
+        st.error("Kolom sentimen tidak ditemukan.")
+        st.stop()
+
+    data["sentimen"] = (
+        data["sentimen"]
+        .fillna("")
+        .astype(str)
+        .str.strip()
+        .str.title()
+    )
+
+    data = data[
+        data["sentimen"] == label_pilih
+    ].copy()
+
+    if data.empty:
+        st.warning("Tidak ada data yang sesuai.")
+        st.stop()
+
+    # =====================================================
+    # STOPWORDS
+    # =====================================================
+
+    stop_words = {
+        "mobil","listrik","kendaraan","indonesia","ev",
+        "yg","nya","aja","nih","kan","dong","sih",
+        "aku","saya","kami","kita","orang",
+        "buat","jadi","karena","kalau","kalo",
+        "lebih","masih","cukup","banyak",
+        "itu","ini","the","and"
+    }
+
+    # =====================================================
+    # LANJUT KE TopWords_Full_Part2.py
+    # =====================================================
+# ============================================================
+# TOPWORDS_FULL_PART2.py
+# Tempelkan tepat setelah TopWords_Full_Part1.py
+# ============================================================
+
+    from collections import Counter
+
+    # =====================================================
+    # TOKENISASI
+    # =====================================================
+
+    semua_kata = []
+
+    for kalimat in data["text_wordcloud"]:
+
+        token = str(kalimat).split()
+
+        token = [
+            t.strip()
+            for t in token
+            if len(t.strip()) > 2
+            and t.strip() not in stop_words
+        ]
+
+        semua_kata.extend(token)
+
+    # =====================================================
+    # HITUNG FREKUENSI
+    # =====================================================
+
+    counter = Counter(semua_kata)
+
+    top_word = (
+        pd.DataFrame(
+            counter.items(),
+            columns=["Kata", "Frekuensi"]
+        )
+        .sort_values(
+            by="Frekuensi",
+            ascending=False
+        )
+        .reset_index(drop=True)
+    )
+
+    if top_word.empty:
+        st.warning("Tidak ada kata yang dapat ditampilkan.")
+        st.stop()
+
+    # =====================================================
+    # PILIH JUMLAH KATA
+    # =====================================================
+
+    jumlah = st.selectbox(
+        "🔢 Jumlah Top Words",
+        [10, 20, 30, 50, 100],
+        index=1,
+        key="tw_jumlah"
+    )
+
+    top_tampil = top_word.head(jumlah).copy()
+
+    st.metric("Jumlah Kata Unik", len(counter))
+
+    st.divider()
+
+    # =====================================================
+    # TABEL TOP WORDS
+    # =====================================================
+
+    st.subheader(f"📋 Top {jumlah} Kata")
+
+    tampil = top_tampil.copy()
+    tampil.index = tampil.index + 1
+    tampil.index.name = "No"
+
+    st.dataframe(
+        tampil,
+        use_container_width=True,
+        height=500
+    )
+
+    # =====================================================
+    # PENCARIAN KATA
+    # =====================================================
+
+    cari = st.text_input(
+        "🔍 Cari Kata",
+        key="tw_cari"
+    )
+
+    if cari:
+
+        hasil = top_word[
+            top_word["Kata"].str.contains(
+                cari,
+                case=False,
+                na=False
+            )
+        ]
+
+        st.dataframe(
+            hasil,
+            use_container_width=True,
+            hide_index=True
+        )
+
+    # =====================================================
+    # LANJUT KE TopWords_Full_Part3.py
+    # =====================================================
+# ============================================================
+# TOPWORDS_FULL_PART3.py
+# Tempelkan tepat setelah TopWords_Full_Part2.py
+# ============================================================
+
+    st.divider()
+
+    # =====================================================
+    # GRAFIK HORIZONTAL
+    # =====================================================
+
+    st.subheader(f"📊 Grafik Top {jumlah} Kata")
+
+    fig_bar = px.bar(
+        top_tampil,
+        x="Frekuensi",
+        y="Kata",
+        orientation="h",
+        text="Frekuensi",
+        color="Frekuensi",
+        color_continuous_scale="viridis"
+    )
+
+    fig_bar.update_layout(
+        title=f"Top {jumlah} Kata ({dataset_pilih} - {label_pilih})",
+        height=650,
+        yaxis=dict(categoryorder="total ascending"),
+        coloraxis_showscale=False
+    )
+
+    fig_bar.update_traces(textposition="outside")
+
+    st.plotly_chart(
+        fig_bar,
+        use_container_width=True
+    )
+
+    st.divider()
+
+    # =====================================================
+    # GRAFIK VERTIKAL
+    # =====================================================
+
+    st.subheader("📈 Grafik Vertikal")
+
+    fig_col = px.bar(
+        top_tampil,
+        x="Kata",
+        y="Frekuensi",
+        text="Frekuensi",
+        color="Frekuensi",
+        color_continuous_scale="viridis"
+    )
+
+    fig_col.update_layout(
+        height=550,
+        xaxis_title="Kata",
+        yaxis_title="Frekuensi",
+        coloraxis_showscale=False
+    )
+
+    st.plotly_chart(
+        fig_col,
+        use_container_width=True
+    )
+
+    st.divider()
+
+    # =====================================================
+    # METRIK
+    # =====================================================
+
+    c1, c2, c3 = st.columns(3)
+
+    c1.metric("Jumlah Komentar", len(data))
+    c2.metric("Jumlah Kata", len(semua_kata))
+    c3.metric("Kata Unik", len(counter))
+
+    st.info(
+        f"Kata paling sering muncul adalah **{top_tampil.iloc[0]['Kata']}** "
+        f"dengan frekuensi **{int(top_tampil.iloc[0]['Frekuensi'])}**."
+    )
+
+    # =====================================================
+    # LANJUT KE TopWords_Full_Part4.py
+    # =====================================================
+# ============================================================
+# TOPWORDS_FULL_PART4.py
+# Tempelkan tepat setelah TopWords_Full_Part3.py
+# ============================================================
+
+    st.divider()
+
+    # =====================================================
+    # DOWNLOAD CSV
+    # =====================================================
+
+    csv = top_tampil.to_csv(index=False).encode("utf-8")
+
+    st.download_button(
+        label="⬇️ Download Top Words (CSV)",
+        data=csv,
+        file_name=f"TopWords_{dataset_pilih}_{label_pilih}.csv",
+        mime="text/csv"
+    )
+
+    # =====================================================
+    # DOWNLOAD EXCEL
+    # =====================================================
+
+    import io
+
+    excel_buffer = io.BytesIO()
+
+    with pd.ExcelWriter(excel_buffer, engine="openpyxl") as writer:
+        top_tampil.to_excel(
+            writer,
+            index=False,
+            sheet_name="Top Words"
+        )
+
+    excel_buffer.seek(0)
+
+    st.download_button(
+        label="📄 Download Top Words (Excel)",
+        data=excel_buffer,
+        file_name=f"TopWords_{dataset_pilih}_{label_pilih}.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+    st.divider()
+
+    # =====================================================
+    # RINGKASAN ANALISIS
+    # =====================================================
+
+    kata_utama = top_tampil.iloc[0]["Kata"]
+    frekuensi = int(top_tampil.iloc[0]["Frekuensi"])
+
+    st.subheader("📝 Ringkasan Analisis")
+
+    st.success(
+        f"""
+Dataset : **{dataset_pilih}**
+
+Sentimen : **{label_pilih}**
+
+Jumlah komentar : **{len(data):,}**
+
+Jumlah kata unik : **{len(counter):,}**
+
+Kata paling dominan adalah **{kata_utama}**
+dengan frekuensi **{frekuensi}** kemunculan.
+"""
+    )
+
+    with st.expander("ℹ️ Keterangan"):
+        st.markdown("""
+- Data berasal dari kolom **text_wordcloud**.
+- Frekuensi dihitung menggunakan **Counter**.
+- Stopwords telah dihapus sebelum proses analisis.
+- Tabel dan grafik berasal dari sumber data yang sama.
+""")
+
+    st.divider()
+
+    st.caption(
+        "Dashboard Analisis Sentimen Mobil Listrik Indonesia | Top Words"
+    )
+
+# ============================================================
+# END TOP WORDS
+# ============================================================
+# ============================================================
+# TOPWORDS_FULL_PART5.py
+# OPSIONAL - PENYEMPURNAAN HALAMAN TOP WORDS
+# Tempelkan setelah TopWords_Full_Part4.py
+# ============================================================
+
+    st.divider()
+
+    # =====================================================
+    # TOP 50 KATA
+    # =====================================================
+
+    st.subheader("📌 Top 50 Kata")
+
+    top50 = top_word.head(50).copy()
+
+    st.dataframe(
+        top50,
+        use_container_width=True,
+        hide_index=True,
+        height=500
+    )
+
+    # =====================================================
+    # DOWNLOAD TOP 50
+    # =====================================================
+
+    csv50 = top50.to_csv(index=False).encode("utf-8")
+
+    st.download_button(
+        label="⬇️ Download Top 50 Kata",
+        data=csv50,
+        file_name=f"Top50_{dataset_pilih}_{label_pilih}.csv",
+        mime="text/csv"
+    )
+
+    st.divider()
+
+    # =====================================================
+    # RINGKASAN STATISTIK
+    # =====================================================
+
+    st.subheader("📊 Statistik Top Words")
+
+    c1, c2, c3 = st.columns(3)
+
+    c1.metric("Total Kata Unik", len(counter))
+    c2.metric("Top Words Ditampilkan", len(top_tampil))
+    c3.metric("Top 50 Tersedia", len(top50))
+
+    st.info(
+        "Halaman ini menampilkan frekuensi kata hasil preprocessing "
+        "berdasarkan dataset dan label sentimen yang dipilih."
+    )
+
+    st.success("✅ Halaman Top Words selesai dimuat.")
+# ============================================================
+# TOPWORDS_FULL_PART6.py
+# OPSIONAL - VISUALISASI TAMBAHAN
+# Tempelkan setelah TopWords_Full_Part5.py
+# ============================================================
+
+    st.divider()
+
+    # =====================================================
+    # WORD FREQUENCY PERCENTAGE
+    # =====================================================
+
+    st.subheader("📊 Persentase Top Words")
+
+    persen = top_tampil.copy()
+    total_freq = persen["Frekuensi"].sum()
+
+    persen["Persentase (%)"] = (
+        persen["Frekuensi"] / total_freq * 100
+    ).round(2)
+
+    st.dataframe(
+        persen,
+        use_container_width=True,
+        hide_index=True,
+        height=450
+    )
+
+    fig_persen = px.bar(
+        persen,
+        x="Kata",
+        y="Persentase (%)",
+        text="Persentase (%)",
+        color="Persentase (%)",
+        color_continuous_scale="viridis"
+    )
+
+    fig_persen.update_layout(
+        title=f"Persentase Top {len(top_tampil)} Kata",
+        height=550,
+        coloraxis_showscale=False
+    )
+
+    fig_persen.update_traces(textposition="outside")
+
+    st.plotly_chart(
+        fig_persen,
+        use_container_width=True
+    )
+
+    st.divider()
+
+    # =====================================================
+    # DOWNLOAD PERSENTASE
+    # =====================================================
+
+    csv_persen = persen.to_csv(index=False).encode("utf-8")
+
+    st.download_button(
+        label="⬇️ Download Persentase Top Words",
+        data=csv_persen,
+        file_name=f"PersentaseTopWords_{dataset_pilih}_{label_pilih}.csv",
+        mime="text/csv"
+    )
+
+    st.success("✅ Analisis Top Words selesai.")
+
 
 elif menu=="📈 Evaluasi Model":
     st.title("Evaluasi Model")
