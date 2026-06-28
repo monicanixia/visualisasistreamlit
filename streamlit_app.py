@@ -1007,39 +1007,25 @@ sentimen menggunakan **XGBoost** dan **LSTM**.
     # AMBIL METRIK
     # =====================================================
 
-    def ambil_nilai(kolom):
-        if kolom in hasil.columns:
-            return float(hasil.iloc[0][kolom])
-        return 0.0
+    # =====================================================
+# AMBIL NILAI METRIK
+# =====================================================
 
-    accuracy = ambil_nilai("Accuracy")
-    precision = ambil_nilai("Precision")
-    recall = ambil_nilai("Recall")
-    f1score = ambil_nilai("F1-Score")
+    row = hasil.iloc[0]
 
-    c1, c2, c3, c4 = st.columns(4)
+    if model_pilih == "XGBoost":
 
-    c1.metric(
-        "🎯 Accuracy",
-        f"{accuracy:.2%}" if accuracy <= 1 else f"{accuracy:.2f}%"
-    )
+        accuracy = float(row["Test Accuracy"])
+        precision = float(row["Macro Precision"])
+        recall = float(row["Macro Recall"])
+        f1score = float(row["Macro F1"])
 
-    c2.metric(
-        "📌 Precision",
-        f"{precision:.2%}" if precision <= 1 else f"{precision:.2f}%"
-    )
+    else:
 
-    c3.metric(
-        "📍 Recall",
-        f"{recall:.2%}" if recall <= 1 else f"{recall:.2f}%"
-    )
-
-    c4.metric(
-        "🏆 F1-Score",
-        f"{f1score:.2%}" if f1score <= 1 else f"{f1score:.2f}%"
-    )
-
-    st.divider()
+        accuracy = float(row["Accuracy"])
+        precision = float(row["Macro Precision"])
+        recall = float(row["Macro Recall"])
+        f1score = float(row["Macro F1"])
 
     # LANJUT KE EvaluasiModel_Full_Part3.py
 # ==========================================================
@@ -1114,29 +1100,6 @@ sedangkan sel lainnya menunjukkan kesalahan klasifikasi.
 
     st.divider()
 
-    st.subheader("🎯 Ringkasan Hasil")
-
-    nilai = {
-        "Accuracy": accuracy,
-        "Precision": precision,
-        "Recall": recall,
-        "F1-Score": f1score
-    }
-
-    terbaik = max(nilai, key=nilai.get)
-
-    st.success(f'''
-    Dataset : **{dataset_pilih}**
-
-    Model : **{model_pilih}**
-
-    Split : **{split_pilih}**
-
-    Metrik dengan nilai tertinggi adalah **{terbaik}**.
-    ''')
-
-    with st.expander("ℹ️ Keterangan Metrik"):
-
         st.markdown("""
     - **Accuracy** : Persentase prediksi yang benar.
     - **Precision** : Ketepatan prediksi pada setiap kelas.
@@ -1184,32 +1147,40 @@ sedangkan sel lainnya menunjukkan kesalahan klasifikasi.
         file_name=f"Evaluasi_{model_pilih}_{dataset_pilih}_{split_pilih}.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+    st.divider()
+
+    st.subheader("📝 Penjelasan Confusion Matrix")
+
+    st.info(f"""
+    Confusion Matrix digunakan untuk mengevaluasi hasil prediksi model **{model_pilih}**
+    terhadap dataset **{dataset_pilih}** dengan pembagian data **{split_pilih}**.
+
+    Nilai pada diagonal utama menunjukkan jumlah prediksi yang benar.
+
+    Sedangkan nilai di luar diagonal menunjukkan jumlah prediksi yang salah.
+    """)
 
     st.divider()
 
-    st.subheader("📝 Kesimpulan")
+    st.subheader("📋 Ringkasan Evaluasi Model")
 
-    st.success(
-        f"""
-Model **{model_pilih}** pada dataset **{dataset_pilih}**
-dengan pembagian data **{split_pilih}** menghasilkan:
+    st.success(f"""
+    Dataset : **{dataset_pilih}**
 
-- Accuracy : **{accuracy:.4f}**
-- Precision : **{precision:.4f}**
-- Recall : **{recall:.4f}**
-- F1-Score : **{f1score:.4f}**
+    Model : **{model_pilih}**
 
-Hasil ini dapat digunakan sebagai dasar untuk
-membandingkan performa model pada berbagai skenario
-pengujian.
-"""
-    )
+    Split Data : **{split_pilih}**
 
-    st.divider()
+    Accuracy : **{accuracy:.4f}**
 
-    st.caption(
-        "Dashboard Analisis Sentimen Mobil Listrik Indonesia | Evaluasi Model"
-    )
+    Precision : **{precision:.4f}**
+
+    Recall : **{recall:.4f}**
+
+    F1-Score : **{f1score:.4f}**
+    """)
+
+    
 
 # ==========================================================
 # END EVALUASI MODEL
