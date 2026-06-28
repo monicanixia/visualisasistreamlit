@@ -1088,13 +1088,13 @@ sentimen menggunakan **XGBoost** dan **LSTM**.
 
     else:
 
-    st.error(f"File tidak ditemukan : {nama_file}")
+        st.error(f"File tidak ditemukan : {nama_file}")
 
-    st.divider()
+        st.divider()
 
-    st.subheader("📈 Interpretasi Singkat")
+        st.subheader("📈 Interpretasi Singkat")
 
-    st.info(
+        st.info(
         f'''
 Model **{model_pilih}** pada dataset **{dataset_pilih}**
 dengan pembagian data **{split_pilih}**
