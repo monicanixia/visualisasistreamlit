@@ -440,29 +440,29 @@ muncul berdasarkan dataset dan label sentimen.
 # KAMUS KATA PER SENTIMEN
 # =====================================================
 
-positive_words = {
+    positive_words = {
     "bagus","baik","mantap","keren","hemat",
     "murah","cepat","nyaman","ramah","modern",
     "maju","berkembang","praktis","efisien",
     "unggul","canggih","aman","stabil",
     "mudah","dukung","suka","cocok",
     "lancar","irit","jujur","moga"
-}
+    }
 
-negative_words = {
+    negative_words = {
     "mahal","rusak","buruk","jelek","ribet",
     "takut","ragu","boros","mogok","bahaya",
     "kecewa","parah","gagal","lambat",
     "bekas","limbah","masalah","error"
-}
+    }
 
-neutral_words = {
+    neutral_words = {
     "baterai","charging","stasiun",
     "teknologi","kendara","kendaraan",
     "pasar","industri","pemerintah",
     "fitur","jarak","motor",
     "energi","subsidi"
-}
+    }
 
     # =====================================================
     # LANJUT KE PART 2
@@ -477,9 +477,9 @@ neutral_words = {
     # TOKENISASI
     # =====================================================
 
-semua_kata = []
+    semua_kata = []
 
-for kalimat in df["text_wordcloud"]:
+    for kalimat in df["text_wordcloud"]:
 
     token = str(kalimat).split()
 
