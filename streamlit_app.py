@@ -1095,18 +1095,6 @@ sedangkan sel lainnya menunjukkan kesalahan klasifikasi.
 # EvaluasiModel_Full_Part4.py
 # Tempelkan setelah EvaluasiModel_Full_Part3.py
 # ==========================================================
-
-    st.divider()
-
-    st.divider()
-
-        st.markdown("""
-    - **Accuracy** : Persentase prediksi yang benar.
-    - **Precision** : Ketepatan prediksi pada setiap kelas.
-    - **Recall** : Kemampuan model menemukan seluruh data pada suatu kelas.
-    - **F1-Score** : Rata-rata harmonis antara Precision dan Recall.
-    """)
-
     # =====================================================
     # LANJUT KE EvaluasiModel_Full_Part5.py
     # =====================================================
