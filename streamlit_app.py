@@ -560,27 +560,26 @@ muncul berdasarkan dataset dan label sentimen.
 
     counter = Counter(kata_dominan)
 
-    top_word = (
-        pd.DataFrame(
-            counter.items(),
-            columns=[
-                "Kata",
-                "Frekuensi"
-            ]
-        )
-        .sort_values(
-            "Frekuensi",
-            ascending=False
-        )
-        .reset_index(drop=True)
+top_word = (
+    pd.DataFrame(
+        counter.items(),
+        columns=[
+            "Kata",
+            "Frekuensi"
+        ]
     )
+    .sort_values(
+        "Frekuensi",
+        ascending=False
+    )
+    .reset_index(drop=True)
+)
 
-        if top_word.empty:
+if top_word.empty:
 
-            st.warning("Tidak ada kata yang dapat divisualisasikan.")
+    st.warning("Tidak ada kata yang dapat divisualisasikan.")
 
-            st.stop()
-
+    st.stop()
     # =====================================================
     # MEMBANGUN TEKS WORD CLOUD
     # =====================================================
