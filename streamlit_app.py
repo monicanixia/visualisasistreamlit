@@ -915,6 +915,350 @@ dataset dan label sentimen.
     st.divider()
 
 
+# ==========================================================
+# EvaluasiModel_Full_Part1.py
+# Tempelkan menggantikan:
+# elif menu=="📈 Evaluasi Model":
+# ==========================================================
+
 elif menu=="📈 Evaluasi Model":
-    st.title("Evaluasi Model")
-    st.warning("Fitur akan dilengkapi pada Part 006.")
+
+    st.title("📈 Evaluasi Model")
+
+    st.markdown("""
+Halaman ini menampilkan hasil evaluasi model klasifikasi
+sentimen menggunakan **XGBoost** dan **LSTM**.
+""")
+
+    st.divider()
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        dataset_pilih = st.selectbox(
+            "📂 Dataset",
+            ["YouTube","TikTok"],
+            key="eval_dataset"
+        )
+
+    with col2:
+        model_pilih = st.selectbox(
+            "🤖 Model",
+            ["XGBoost","LSTM"],
+            key="eval_model"
+        )
+
+    with col3:
+        split_pilih = st.selectbox(
+            "📊 Data Split",
+            ["80:20","70:30","60:40"],
+            key="eval_split"
+        )
+
+    st.divider()
+
+    if model_pilih=="XGBoost":
+
+        if dataset_pilih=="YouTube":
+            df = pd.read_excel("ringkasan_xgboost_Youtube.xlsx")
+        else:
+            df = pd.read_excel("ringkasan_xgboost_Tiktok.xlsx")
+
+    else:
+
+        if dataset_pilih=="YouTube":
+            df = pd.read_excel("ringkasan_lstm_Youtube.xlsx")
+        else:
+            df = pd.read_excel("ringkasan_lstm_Tiktok.xlsx")
+
+    df.columns = df.columns.str.strip()
+
+    if "Split" in df.columns:
+        hasil = df[df["Split"].astype(str)==split_pilih].copy()
+    else:
+        hasil = df.copy()
+
+    if hasil.empty:
+        st.warning("Data evaluasi tidak ditemukan.")
+        st.stop()
+
+    st.success(
+        f"Dataset : {dataset_pilih} | Model : {model_pilih} | Split : {split_pilih}"
+    )
+
+    # LANJUT KE EvaluasiModel_Full_Part2.py
+# ==========================================================
+# EvaluasiModel_Full_Part2.py
+# Tempelkan setelah EvaluasiModel_Full_Part1.py
+# ==========================================================
+
+    st.subheader("📋 Hasil Evaluasi Model")
+
+    st.dataframe(
+        hasil,
+        use_container_width=True,
+        hide_index=True
+    )
+
+    st.divider()
+
+    # =====================================================
+    # AMBIL METRIK
+    # =====================================================
+
+    def ambil_nilai(kolom):
+        if kolom in hasil.columns:
+            return float(hasil.iloc[0][kolom])
+        return 0.0
+
+    accuracy = ambil_nilai("Accuracy")
+    precision = ambil_nilai("Precision")
+    recall = ambil_nilai("Recall")
+    f1score = ambil_nilai("F1-Score")
+
+    c1, c2, c3, c4 = st.columns(4)
+
+    c1.metric(
+        "🎯 Accuracy",
+        f"{accuracy:.2%}" if accuracy <= 1 else f"{accuracy:.2f}%"
+    )
+
+    c2.metric(
+        "📌 Precision",
+        f"{precision:.2%}" if precision <= 1 else f"{precision:.2f}%"
+    )
+
+    c3.metric(
+        "📍 Recall",
+        f"{recall:.2%}" if recall <= 1 else f"{recall:.2f}%"
+    )
+
+    c4.metric(
+        "🏆 F1-Score",
+        f"{f1score:.2%}" if f1score <= 1 else f"{f1score:.2f}%"
+    )
+
+    st.divider()
+
+    st.subheader("📊 Performa Model")
+
+    metric_df = pd.DataFrame({
+        "Metric":[
+            "Accuracy",
+            "Precision",
+            "Recall",
+            "F1-Score"
+        ],
+        "Nilai":[
+            accuracy,
+            precision,
+            recall,
+            f1score
+        ]
+    })
+
+    fig = px.bar(
+        metric_df,
+        x="Metric",
+        y="Nilai",
+        text="Nilai",
+        color="Metric"
+    )
+
+    fig.update_layout(
+        height=500,
+        yaxis_title="Score"
+    )
+
+    fig.update_traces(texttemplate="%{text:.3f}")
+
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
+
+    # LANJUT KE EvaluasiModel_Full_Part3.py
+# ==========================================================
+# EvaluasiModel_Full_Part3.py
+# Tempelkan setelah EvaluasiModel_Full_Part2.py
+# ==========================================================
+
+    st.divider()
+
+    st.subheader("🖼️ Confusion Matrix")
+
+    split_file = split_pilih.replace(":", "_")
+
+    if model_pilih == "XGBoost":
+        prefix = "cm_xgboost"
+    else:
+        prefix = "cm_lstm"
+
+    nama_file = f"{prefix}_{split_file}_{dataset_pilih}.png"
+
+    try:
+        st.image(
+            nama_file,
+            caption=f"Confusion Matrix {model_pilih} | {dataset_pilih} | {split_pilih}",
+            use_container_width=True
+        )
+
+        with open(nama_file, "rb") as img:
+            st.download_button(
+                "⬇️ Download Confusion Matrix",
+                data=img,
+                file_name=nama_file,
+                mime="image/png"
+            )
+
+    except Exception:
+        st.warning(
+            f"File {nama_file} tidak ditemukan di repository."
+        )
+
+    st.divider()
+
+    st.subheader("📈 Interpretasi Singkat")
+
+    st.info(
+        f'''
+Model **{model_pilih}** pada dataset **{dataset_pilih}**
+dengan pembagian data **{split_pilih}**
+ditampilkan melalui confusion matrix di atas.
+Diagonal utama menunjukkan jumlah prediksi yang benar,
+sedangkan sel lainnya menunjukkan kesalahan klasifikasi.
+'''
+    )
+
+    # LANJUT KE EvaluasiModel_Full_Part4.py
+# ==========================================================
+# EvaluasiModel_Full_Part4.py
+# Tempelkan setelah EvaluasiModel_Full_Part3.py
+# ==========================================================
+
+    st.divider()
+
+    st.subheader("📊 Perbandingan Metrik")
+
+    metric_df = pd.DataFrame({
+        "Metrik": ["Accuracy", "Precision", "Recall", "F1-Score"],
+        "Nilai": [accuracy, precision, recall, f1score]
+    })
+
+    fig_line = px.line(
+        metric_df,
+        x="Metrik",
+        y="Nilai",
+        markers=True
+    )
+
+    fig_line.update_layout(
+        height=450,
+        yaxis_title="Nilai",
+        xaxis_title=""
+    )
+
+    st.plotly_chart(
+        fig_line,
+        use_container_width=True
+    )
+
+    st.divider()
+
+    st.subheader("🎯 Ringkasan Hasil")
+
+    terbaik = metric_df.loc[
+        metric_df["Nilai"].idxmax(),
+        "Metrik"
+    ]
+
+    st.success(f'''
+Dataset : **{dataset_pilih}**
+
+Model : **{model_pilih}**
+
+Split : **{split_pilih}**
+
+Metrik dengan nilai tertinggi adalah **{terbaik}**.
+''')
+
+    with st.expander("ℹ️ Keterangan Metrik"):
+
+        st.markdown("""
+- **Accuracy** : Persentase prediksi yang benar.
+- **Precision** : Ketepatan prediksi pada setiap kelas.
+- **Recall** : Kemampuan model menemukan seluruh data pada suatu kelas.
+- **F1-Score** : Rata-rata harmonis antara Precision dan Recall.
+""")
+
+    # =====================================================
+    # LANJUT KE EvaluasiModel_Full_Part5.py
+    # =====================================================
+# ==========================================================
+# EvaluasiModel_Full_Part5.py
+# Tempelkan setelah EvaluasiModel_Full_Part4.py
+# ==========================================================
+
+    st.divider()
+
+    st.subheader("💾 Download Hasil Evaluasi")
+
+    csv = hasil.to_csv(index=False).encode("utf-8")
+
+    st.download_button(
+        label="⬇️ Download Hasil (CSV)",
+        data=csv,
+        file_name=f"Evaluasi_{model_pilih}_{dataset_pilih}_{split_pilih}.csv",
+        mime="text/csv"
+    )
+
+    import io
+
+    excel_buffer = io.BytesIO()
+
+    with pd.ExcelWriter(excel_buffer, engine="openpyxl") as writer:
+        hasil.to_excel(
+            writer,
+            index=False,
+            sheet_name="Evaluasi Model"
+        )
+
+    excel_buffer.seek(0)
+
+    st.download_button(
+        label="📄 Download Hasil (Excel)",
+        data=excel_buffer,
+        file_name=f"Evaluasi_{model_pilih}_{dataset_pilih}_{split_pilih}.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+
+    st.divider()
+
+    st.subheader("📝 Kesimpulan")
+
+    st.success(
+        f"""
+Model **{model_pilih}** pada dataset **{dataset_pilih}**
+dengan pembagian data **{split_pilih}** menghasilkan:
+
+- Accuracy : **{accuracy:.4f}**
+- Precision : **{precision:.4f}**
+- Recall : **{recall:.4f}**
+- F1-Score : **{f1score:.4f}**
+
+Hasil ini dapat digunakan sebagai dasar untuk
+membandingkan performa model pada berbagai skenario
+pengujian.
+"""
+    )
+
+    st.divider()
+
+    st.caption(
+        "Dashboard Analisis Sentimen Mobil Listrik Indonesia | Evaluasi Model"
+    )
+
+# ==========================================================
+# END EVALUASI MODEL
+# ==========================================================
+
