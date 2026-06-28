@@ -1041,43 +1041,6 @@ sentimen menggunakan **XGBoost** dan **LSTM**.
 
     st.divider()
 
-    st.subheader("📊 Performa Model")
-
-    metric_df = pd.DataFrame({
-        "Metric":[
-            "Accuracy",
-            "Precision",
-            "Recall",
-            "F1-Score"
-        ],
-        "Nilai":[
-            accuracy,
-            precision,
-            recall,
-            f1score
-        ]
-    })
-
-    fig = px.bar(
-        metric_df,
-        x="Metric",
-        y="Nilai",
-        text="Nilai",
-        color="Metric"
-    )
-
-    fig.update_layout(
-        height=500,
-        yaxis_title="Score"
-    )
-
-    fig.update_traces(texttemplate="%{text:.3f}")
-
-    st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
-
     # LANJUT KE EvaluasiModel_Full_Part3.py
 # ==========================================================
 # EvaluasiModel_Full_Part3.py
@@ -1148,31 +1111,6 @@ sedangkan sel lainnya menunjukkan kesalahan klasifikasi.
 # ==========================================================
 
     st.divider()
-
-    st.subheader("📊 Perbandingan Metrik")
-
-    metric_df = pd.DataFrame({
-        "Metrik": ["Accuracy", "Precision", "Recall", "F1-Score"],
-        "Nilai": [accuracy, precision, recall, f1score]
-    })
-
-    fig_line = px.line(
-        metric_df,
-        x="Metrik",
-        y="Nilai",
-        markers=True
-    )
-
-    fig_line.update_layout(
-        height=450,
-        yaxis_title="Nilai",
-        xaxis_title=""
-    )
-
-    st.plotly_chart(
-        fig_line,
-        use_container_width=True
-    )
 
     st.divider()
 
