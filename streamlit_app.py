@@ -434,6 +434,33 @@ muncul berdasarkan dataset dan label sentimen.
         "karena","kalau","kalo","lebih","masih",
         "cukup","banyak","ini","itu","the","and"
     }
+# =====================================================
+# KAMUS KATA PER SENTIMEN
+# =====================================================
+
+positive_words = {
+    "bagus","baik","mantap","keren","hemat",
+    "murah","cepat","nyaman","ramah","modern",
+    "maju","berkembang","praktis","efisien",
+    "unggul","canggih","aman","stabil",
+    "mudah","dukung","suka","cocok",
+    "lancar","irit","jujur","moga"
+}
+
+negative_words = {
+    "mahal","rusak","buruk","jelek","ribet",
+    "takut","ragu","boros","mogok","bahaya",
+    "kecewa","parah","gagal","lambat",
+    "bekas","limbah","masalah","error"
+}
+
+neutral_words = {
+    "baterai","charging","stasiun",
+    "teknologi","kendara","kendaraan",
+    "pasar","industri","pemerintah",
+    "fitur","jarak","motor",
+    "energi","subsidi"
+}
 
     # =====================================================
     # LANJUT KE PART 2
@@ -450,20 +477,54 @@ muncul berdasarkan dataset dan label sentimen.
     # TOKENISASI
     # =====================================================
 
-    semua_kata = []
+semua_kata = []
 
-    for kalimat in df["text_wordcloud"]:
+for kalimat in df["text_wordcloud"]:
 
-        token = str(kalimat).split()
+    token = str(kalimat).split()
+
+    token = [
+        t.strip()
+        for t in token
+        if len(t.strip()) > 2
+        and t.strip() not in stop_words
+    ]
+
+    # ===================================================
+    # FILTER BERDASARKAN SENTIMEN
+    # ===================================================
+
+    if label_pilih == "Positif":
 
         token = [
-            t.strip()
-            for t in token
-            if len(t.strip()) > 2
-            and t.strip() not in stop_words
+
+            x for x in token
+
+            if x in positive_words
+
         ]
 
-        semua_kata.extend(token)
+    elif label_pilih == "Negatif":
+
+        token = [
+
+            x for x in token
+
+            if x in negative_words
+
+        ]
+
+    else:
+
+        token = [
+
+            x for x in token
+
+            if x in neutral_words
+
+        ]
+
+    semua_kata.extend(token)
 
     # =====================================================
     # HITUNG FREKUENSI
@@ -588,12 +649,12 @@ muncul berdasarkan dataset dan label sentimen.
     # TOP 20 KATA
     # =====================================================
 
-    top20 = top_word.head(20).copy()
+    top10 = top_word.head(10).copy()
 
-    st.subheader("📈 Top 20 Kata")
+    st.subheader("📈 Top 10 Kata")
 
     fig_bar = px.bar(
-        top20,
+        top10,
         x="Frekuensi",
         y="Kata",
         orientation="h",
@@ -603,7 +664,7 @@ muncul berdasarkan dataset dan label sentimen.
     )
 
     fig_bar.update_layout(
-        title=f"Top 20 Kata ({dataset_pilih} - {label_pilih})",
+        title=f"Top 10 Kata ({dataset_pilih} - {label_pilih})",
         height=650,
         yaxis=dict(categoryorder="total ascending"),
         coloraxis_showscale=False
@@ -626,7 +687,7 @@ muncul berdasarkan dataset dan label sentimen.
 
     st.subheader("📋 Tabel Frekuensi Kata")
 
-    tampil = top20.copy()
+    tampil = top10.copy()
 
     tampil.index = tampil.index + 1
     tampil.index.name = "No"
@@ -680,12 +741,12 @@ muncul berdasarkan dataset dan label sentimen.
     # DOWNLOAD TOP WORD
     # =====================================================
 
-    csv = top20.to_csv(
+    csv = top10.to_csv(
         index=False
     ).encode("utf-8")
 
     st.download_button(
-        label="⬇️ Download Top 20 Kata",
+        label="⬇️ Download Top 10 Kata",
         data=csv,
         file_name=f"Top20_{dataset_pilih}_{label_pilih}.csv",
         mime="text/csv"
@@ -776,8 +837,8 @@ muncul berdasarkan dataset dan label sentimen.
 
     st.subheader("📝 Ringkasan")
 
-    kata_utama = top20.iloc[0]["Kata"]
-    frekuensi_utama = int(top20.iloc[0]["Frekuensi"])
+    kata_utama = top10.iloc[0]["Kata"]
+    frekuensi_utama = int(top10.iloc[0]["Frekuensi"])
 
     st.info(f"""
 Dataset : **{dataset_pilih}**
@@ -839,7 +900,7 @@ sebanyak **{frekuensi_utama}** kali.
 
     st.subheader("💡 Insight Word Cloud")
 
-    lima_kata = ", ".join(top20["Kata"].head(5).tolist())
+    lima_kata = ", ".join(top10["Kata"].head(5).tolist())
 
     st.success(f"""
 Berdasarkan visualisasi Word Cloud pada dataset **{dataset_pilih}**
