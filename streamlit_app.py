@@ -481,14 +481,14 @@ muncul berdasarkan dataset dan label sentimen.
 
     for kalimat in df["text_wordcloud"]:
 
-    token = str(kalimat).split()
+        token = str(kalimat).split()
 
-    token = [
-        t.strip()
-        for t in token
-        if len(t.strip()) > 2
-        and t.strip() not in stop_words
-    ]
+        token = [
+            t.strip()
+            for t in token
+            if len(t.strip()) > 2
+            and t.strip() not in stop_words
+        ]
 
     # ===================================================
     # FILTER BERDASARKAN SENTIMEN
