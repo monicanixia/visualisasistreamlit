@@ -973,9 +973,12 @@ sentimen menggunakan **XGBoost** dan **LSTM**.
             df = pd.read_excel("ringkasan_lstm_Tiktok.xlsx")
 
     df.columns = df.columns.str.strip()
-
-    if "Split" in df.columns:
-        hasil = df[df["Split"].astype(str)==split_pilih].copy()
+    
+    st.write(df.columns)
+    
+    if "Rasio" in df.columns:
+        hasil = df[df["Rasio"].astype(str).str.strip() == split_pilih].copy()
+        st.write(hasil)
     else:
         hasil = df.copy()
 
