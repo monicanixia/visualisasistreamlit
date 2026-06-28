@@ -730,13 +730,7 @@ dataset dan label sentimen.
     # =====================================================
     # PILIH JUMLAH KATA
     # =====================================================
-
-    jumlah = st.selectbox(
-        "🔢 Jumlah Top Words",
-        [10, 20, 30, 50, 100],
-        index=1,
-        key="tw_jumlah"
-    )
+    jumlah = 20
 
     top_tampil = top_word.head(jumlah).copy()
 
