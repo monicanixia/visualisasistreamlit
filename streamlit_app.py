@@ -1060,7 +1060,7 @@ dataset dan label sentimen.
         title=f"Top {jumlah} Kata ({dataset_pilih} - {label_pilih})",
         height=650,
         yaxis=dict(categoryorder="total ascending"),
-        coloraxis_showscale=False
+        coloraxis_showscale=False,
         font=dict(size=20),
         title_font=dict(size=30),
         xaxis=dict(
