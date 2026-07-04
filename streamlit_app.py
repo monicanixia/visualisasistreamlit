@@ -714,7 +714,7 @@ sering muncul berdasarkan dataset dan label sentimen.
         color_continuous_scale="viridis"
     )
 
-   fig2.update_layout(
+    fig2.update_layout(
         title={
             "text":f"Top 20 Kata ({dataset_pilih} - {label_pilih})",
             "font":dict(size=30)
