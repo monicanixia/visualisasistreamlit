@@ -1113,6 +1113,7 @@ dataset dan label sentimen.
             title_font=dict(size=24),
             tickfont=dict(size=20)
         )
+    )
 
     st.plotly_chart(
         fig_col,
