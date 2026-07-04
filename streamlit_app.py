@@ -1072,6 +1072,8 @@ dataset dan label sentimen.
             tickfont=dict(size=20)
         )
 
+    )
+
     fig_bar.update_traces(textposition="outside")
 
     st.plotly_chart(
