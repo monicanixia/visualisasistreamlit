@@ -1336,20 +1336,26 @@ sentimen menggunakan **XGBoost** dan **LSTM**.
 
     if os.path.exists(nama_file):
 
+    st.markdown("### 🖼️ Confusion Matrix")
+
+    # Membuat gambar berada di tengah
+    col1, col2, col3 = st.columns([1, 3, 1])
+
+    with col2:
         st.image(
             nama_file,
-            caption=f"Confusion Matrix {model_pilih} | {dataset_pilih} | {split_pilih}",
-            use_container_width=True
+            width=650,
+            caption=f"{model_pilih} | {dataset_pilih} | Split {split_pilih}"
         )
 
-        with open(nama_file, "rb") as img:
+    with open(nama_file, "rb") as img:
 
-            st.download_button(
-                "⬇️ Download Confusion Matrix",
-                data=img,
-                file_name=nama_file,
-                mime="image/png"
-            )
+        st.download_button(
+            label="⬇️ Download Confusion Matrix",
+            data=img,
+            file_name=nama_file,
+            mime="image/png"
+        )
 
     else:
 
