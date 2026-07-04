@@ -1102,7 +1102,7 @@ dataset dan label sentimen.
         height=550,
         xaxis_title="Kata",
         yaxis_title="Frekuensi",
-        coloraxis_showscale=False
+        coloraxis_showscale=False,
         font=dict(size=20),
         title_font=dict(size=30),
         xaxis=dict(
