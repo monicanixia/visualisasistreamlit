@@ -715,27 +715,22 @@ sering muncul berdasarkan dataset dan label sentimen.
     )
 
    fig2.update_layout(
-
-    title={
-        "text":f"Top 20 Kata ({dataset_pilih} - {label_pilih})",
-        "font":dict(size=30)
-    },
-
-    xaxis=dict(
-        title_font=dict(size=24),
-        tickfont=dict(size=20)
-    ),
-
-    yaxis=dict(
-        title_font=dict(size=24),
-        tickfont=dict(size=20),
-        categoryorder="total ascending"
-    ),
-
-    font=dict(size=20),
-
-    height=800,
-    coloraxis_showscale=False
+        title={
+            "text":f"Top 20 Kata ({dataset_pilih} - {label_pilih})",
+            "font":dict(size=30)
+        },
+        xaxis=dict(
+            title_font=dict(size=24),
+            tickfont=dict(size=20)
+        ),
+        yaxis=dict(
+            title_font=dict(size=24),
+            tickfont=dict(size=20),
+            categoryorder="total ascending"
+        ),
+        font=dict(size=20),
+        height=800,
+        coloraxis_showscale=False
     )
 
     fig2.update_traces(
