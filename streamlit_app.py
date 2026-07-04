@@ -1057,21 +1057,29 @@ dataset dan label sentimen.
     )
 
     fig_bar.update_layout(
-        title=f"Top {jumlah} Kata ({dataset_pilih} - {label_pilih})",
+        title=dict(
+        text=f"Top {jumlah} Kata ({dataset_pilih} - {label_pilih})",
+        font=dict(size=30)
+        ),
+
         height=650,
-        yaxis=dict(categoryorder="total ascending"),
+
         coloraxis_showscale=False,
+
         font=dict(size=20),
-        title_font=dict(size=30),
+
         xaxis=dict(
+            title="Frekuensi",
             title_font=dict(size=24),
             tickfont=dict(size=20)
         ),
+
         yaxis=dict(
+            title="Kata",
+            categoryorder="total ascending",
             title_font=dict(size=24),
             tickfont=dict(size=20)
         )
-
     )
 
     fig_bar.update_traces(textposition="outside")
