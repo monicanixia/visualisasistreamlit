@@ -638,7 +638,7 @@ sering muncul berdasarkan dataset dan label sentimen.
 
     st.subheader(f"☁️ Word Cloud {dataset_pilih} - {label_pilih}")
 
-   fig, ax = plt.subplots(figsize=(22,11))
+    fig, ax = plt.subplots(figsize=(22,11))
     ax.imshow(wc, interpolation="bilinear")
     ax.axis("off")
     st.pyplot(fig, use_container_width=True)
