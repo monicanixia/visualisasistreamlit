@@ -97,18 +97,184 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-.main{
-    background-color:#f5f7fb;
+
+/* ===========================
+   FONT GLOBAL
+=========================== */
+
+html, body, [class*="css"]{
+    font-size:20px;
 }
-.card{
-    background:white;
-    padding:20px;
-    border-radius:15px;
-    box-shadow:0 2px 10px rgba(0,0,0,.08);
+
+/* ===========================
+   JUDUL HALAMAN
+=========================== */
+
+h1{
+    font-size:44px !important;
+    font-weight:bold !important;
+    color:white;
 }
-h1,h2,h3{
-    color:#1565C0;
+
+h2{
+    font-size:34px !important;
+    font-weight:bold !important;
 }
+
+h3{
+    font-size:28px !important;
+    font-weight:bold !important;
+}
+
+/* ===========================
+   PARAGRAF
+=========================== */
+
+p{
+    font-size:22px !important;
+    line-height:1.8;
+}
+
+/* ===========================
+   LABEL
+=========================== */
+
+label{
+    font-size:22px !important;
+    font-weight:600;
+}
+
+/* ===========================
+   RADIO BUTTON
+=========================== */
+
+.stRadio label{
+    font-size:21px !important;
+}
+
+/* ===========================
+   SELECTBOX
+=========================== */
+
+.stSelectbox label{
+    font-size:22px !important;
+}
+
+.stSelectbox div{
+    font-size:20px !important;
+}
+
+/* ===========================
+   TEXT INPUT
+=========================== */
+
+.stTextInput label{
+    font-size:22px !important;
+}
+
+.stTextInput input{
+    font-size:20px !important;
+}
+
+/* ===========================
+   METRIC
+=========================== */
+
+[data-testid="stMetricLabel"]{
+    font-size:22px !important;
+}
+
+[data-testid="stMetricValue"]{
+    font-size:38px !important;
+    font-weight:bold;
+}
+
+/* ===========================
+   DATAFRAME
+=========================== */
+
+thead tr th{
+    font-size:20px !important;
+}
+
+tbody tr td{
+    font-size:19px !important;
+}
+
+/* ===========================
+   SIDEBAR
+=========================== */
+
+section[data-testid="stSidebar"] h1{
+    font-size:34px !important;
+}
+
+section[data-testid="stSidebar"] label{
+    font-size:22px !important;
+}
+
+section[data-testid="stSidebar"] p{
+    font-size:20px !important;
+}
+
+section[data-testid="stSidebar"] span{
+    font-size:21px !important;
+}
+
+/* ===========================
+   BUTTON
+=========================== */
+
+.stButton button{
+    font-size:20px !important;
+    height:55px;
+}
+
+.stDownloadButton button{
+    font-size:20px !important;
+    height:55px;
+}
+
+/* ===========================
+   INFO BOX
+=========================== */
+
+.stAlert{
+    font-size:20px !important;
+}
+
+/* ===========================
+   TAB
+=========================== */
+
+button[data-baseweb="tab"]{
+    font-size:20px !important;
+}
+
+/* ===========================
+   EXPANDER
+=========================== */
+
+.streamlit-expanderHeader{
+    font-size:22px !important;
+}
+
+/* ===========================
+   CAPTION
+=========================== */
+
+figcaption{
+    font-size:20px !important;
+}
+
+/* ===========================
+   PLOTLY
+=========================== */
+
+.js-plotly-plot{
+    font-size:20px !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -265,15 +431,32 @@ elif menu=="📊 Distribusi Label":
     )
 
     fig.update_traces(
-        textposition="outside"
+        textposition="outside",
+        textfont_size=22
     )
 
     fig.update_layout(
-        title=f"Distribusi Sentimen Dataset {nama}",
-        xaxis_title="Label Sentimen",
-        yaxis_title="Jumlah Data",
-        showlegend=False,
-        height=550
+    title={
+        "text": f"Distribusi Sentimen Dataset {nama}",
+        "font": dict(size=30)
+    },
+
+    xaxis=dict(
+        title="Label Sentimen",
+        title_font=dict(size=24),
+        tickfont=dict(size=20)
+    ),
+
+    yaxis=dict(
+        title="Jumlah Data",
+        title_font=dict(size=24),
+        tickfont=dict(size=20)
+    ),
+
+    font=dict(size=20),
+
+    showlegend=False,
+    height=650
     )
 
     st.plotly_chart(fig, use_container_width=True)
@@ -455,7 +638,7 @@ sering muncul berdasarkan dataset dan label sentimen.
 
     st.subheader(f"☁️ Word Cloud {dataset_pilih} - {label_pilih}")
 
-    fig, ax = plt.subplots(figsize=(18,9))
+   fig, ax = plt.subplots(figsize=(22,11))
     ax.imshow(wc, interpolation="bilinear")
     ax.axis("off")
     st.pyplot(fig, use_container_width=True)
@@ -531,14 +714,34 @@ sering muncul berdasarkan dataset dan label sentimen.
         color_continuous_scale="viridis"
     )
 
-    fig2.update_layout(
-        title=f"Top 20 Kata ({dataset_pilih} - {label_pilih})",
-        height=700,
-        coloraxis_showscale=False,
-        yaxis=dict(categoryorder="total ascending")
+   fig2.update_layout(
+
+    title={
+        "text":f"Top 20 Kata ({dataset_pilih} - {label_pilih})",
+        "font":dict(size=30)
+    },
+
+    xaxis=dict(
+        title_font=dict(size=24),
+        tickfont=dict(size=20)
+    ),
+
+    yaxis=dict(
+        title_font=dict(size=24),
+        tickfont=dict(size=20),
+        categoryorder="total ascending"
+    ),
+
+    font=dict(size=20),
+
+    height=800,
+    coloraxis_showscale=False
     )
 
-    fig2.update_traces(textposition="outside")
+    fig2.update_traces(
+        textposition="outside",
+        textfont_size=22
+    )
 
     st.plotly_chart(fig2, use_container_width=True)
 
@@ -863,7 +1066,16 @@ dataset dan label sentimen.
         height=650,
         yaxis=dict(categoryorder="total ascending"),
         coloraxis_showscale=False
-    )
+        font=dict(size=20),
+        title_font=dict(size=30),
+        xaxis=dict(
+            title_font=dict(size=24),
+            tickfont=dict(size=20)
+        ),
+        yaxis=dict(
+            title_font=dict(size=24),
+            tickfont=dict(size=20)
+        )
 
     fig_bar.update_traces(textposition="outside")
 
@@ -894,7 +1106,16 @@ dataset dan label sentimen.
         xaxis_title="Kata",
         yaxis_title="Frekuensi",
         coloraxis_showscale=False
-    )
+        font=dict(size=20),
+        title_font=dict(size=30),
+        xaxis=dict(
+            title_font=dict(size=24),
+            tickfont=dict(size=20)
+        ),
+        yaxis=dict(
+            title_font=dict(size=24),
+            tickfont=dict(size=20)
+        )
 
     st.plotly_chart(
         fig_col,
