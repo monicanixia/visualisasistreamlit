@@ -35,6 +35,12 @@ def load_data():
     word_yt = pd.read_excel("dataset_wordcloud_Youtube.xlsx")
     word_tt = pd.read_excel("dataset_wordcloud_Tiktok.xlsx")
 
+    hasil_aspek_yt = pd.read_excel("hasil_sentimen_per_aspek_Youtube.xlsx")
+    hasil_aspek_tt = pd.read_excel("hasil_sentimen_per_aspek_Tiktok.xlsx")
+
+    persen_aspek_yt = pd.read_excel("persentase_sentimen_per_aspek_Youtube.xlsx")
+    persen_aspek_tt = pd.read_excel("persentase_sentimen_per_aspek_Tiktok.xlsx")
+
     return (
         yt,
         tt,
@@ -48,6 +54,10 @@ def load_data():
         lstm_tt,
         word_yt,
         word_tt
+        hasil_aspek_yt,
+        hasil_aspek_tt,
+        persen_aspek_yt,
+        persen_aspek_tt
     )
 
 
@@ -68,6 +78,10 @@ def load_data():
     lstm_tt,
     word_yt,
     word_tt
+    hasil_aspek_yt,
+    hasil_aspek_tt,
+    persen_aspek_yt,
+    persen_aspek_tt
 ) = load_data()
 
 
@@ -287,6 +301,7 @@ menu = st.sidebar.radio(
         "🏠 Dashboard",
         "📁 Dataset",
         "📊 Distribusi Label",
+        "📊 Distribusi Sentimen per Aspek",
         "☁️ Word Cloud",
         "🔤 Top Words",
         "📈 Evaluasi Model"
@@ -332,6 +347,8 @@ Dashboard ini nantinya akan menampilkan:
 ✅ Dataset
 
 ✅ Distribusi Label
+
+✅ Distribusi Sentimen per Aspek
 
 ✅ WordCloud
 
@@ -496,7 +513,192 @@ elif menu=="📊 Distribusi Label":
         use_container_width=True,
         hide_index=True
     )
+# ============================================================
+# HALAMAN DISTRIBUSI SENTIMEN PER ASPEK
+# ============================================================
 
+elif menu=="📊 Distribusi Sentimen per Aspek":
+
+    st.title("📊 Distribusi Sentimen per Aspek")
+
+    st.markdown("""
+Halaman ini menampilkan distribusi sentimen berdasarkan aspek yang
+dihasilkan dari proses Topic Modeling (LDA).
+""")
+
+    st.divider()
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        dataset_pilih = st.selectbox(
+            "📂 Pilih Dataset",
+            ["YouTube", "TikTok"]
+        )
+
+    with col2:
+
+        jenis = st.selectbox(
+            "📊 Jenis Visualisasi",
+            ["Jumlah Komentar", "Persentase"]
+        )
+    # ===============================
+    # MEMILIH DATASET
+    # ===============================
+
+    if dataset_pilih=="YouTube":
+
+        if jenis=="Jumlah Komentar":
+            data = hasil_aspek_yt.copy()
+
+        else:
+            data = persen_aspek_yt.copy()
+
+    else:
+
+        if jenis=="Jumlah Komentar":
+            data = hasil_aspek_tt.copy()
+
+        else:
+            data = persen_aspek_tt.copy()
+    data.columns = (
+        data.columns
+        .str.strip()
+    )
+    aspek = data.columns[0]
+
+    positif = data.columns[1]
+
+    negatif = data.columns[2]
+
+    netral = data.columns[3]
+    fig = px.bar(
+
+        data,
+
+        x=aspek,
+
+        y=[positif, negatif, netral],
+
+        barmode="stack",
+
+        text_auto=True,
+
+        color_discrete_map={
+
+            positif:"#2ecc71",
+
+            negatif:"#e74c3c",
+
+            netral:"#95a5a6"
+
+        }
+
+    )
+    fig.update_layout(
+
+        title=dict(
+
+            text=f"Distribusi Sentimen per Aspek ({dataset_pilih})",
+
+            font=dict(size=30)
+
+        ),
+
+        xaxis_title="Aspek",
+
+        yaxis_title=jenis,
+
+        font=dict(size=18),
+
+        legend_title="Sentimen",
+
+        height=700
+
+    )
+
+    st.plotly_chart(
+
+        fig,
+
+        use_container_width=True
+    )
+    st.divider()
+
+    st.subheader("📋 Tabel Data")
+
+    st.dataframe(
+
+        data,
+
+        use_container_width=True,
+
+        hide_index=True
+    )
+    st.divider()
+
+    c1,c2,c3,c4 = st.columns(4)
+
+    c1.metric(
+
+        "Jumlah Aspek",
+
+        len(data)
+
+    )
+
+    c2.metric(
+
+        "Positif",
+
+        round(data[positif].sum(),2)
+
+    )
+
+    c3.metric(
+
+        "Negatif",
+
+        round(data[negatif].sum(),2)
+
+    )
+
+    c4.metric(
+
+        "Netral",
+
+        round(data[netral].sum(),2)
+
+    )
+    st.divider()
+
+    csv = data.to_csv(index=False).encode("utf-8")
+
+    st.download_button(
+
+        "⬇ Download Data",
+
+        csv,
+
+        file_name=f"{dataset_pilih}_{jenis}.csv",
+
+        mime="text/csv"
+    )
+    st.divider()
+
+    st.subheader("📝 Insight")
+
+    aspek_tertinggi = data.loc[
+        data[positif].idxmax(),
+        aspek
+    ]
+
+    st.success(
+
+        f"Aspek dengan sentimen positif tertinggi adalah **{aspek_tertinggi}**."
+
+    )
 # ============================================================
 # HALAMAN WORD CLOUD
 # Ganti seluruh blok:
