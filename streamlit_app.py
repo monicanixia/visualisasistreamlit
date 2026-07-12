@@ -77,7 +77,7 @@ def load_data():
     lstm_yt,
     lstm_tt,
     word_yt,
-    word_tt
+    word_tt,
     hasil_aspek_yt,
     hasil_aspek_tt,
     persen_aspek_yt,
