@@ -566,20 +566,17 @@ dihasilkan dari proses Topic Modeling (LDA).
         data.columns
         .str.strip()
     )
-    aspek = data.columns[0]
-
-    positif = data.columns[1]
-
-    negatif = data.columns[2]
-
-    netral = data.columns[3]
+    aspek = "label_aspect"
+    negatif = "Negatif"
+    netral = "Netral"
+    positif = "Positif"
     fig = px.bar(
 
         data,
 
         x=aspek,
 
-        y=[positif, negatif, netral],
+        y=[negatif, netral, positif],
 
         barmode="stack",
 
