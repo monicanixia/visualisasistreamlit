@@ -570,6 +570,101 @@ dihasilkan dari proses Topic Modeling (LDA).
     negatif = "Negatif"
     netral = "Netral"
     positif = "Positif"
+
+    # =====================================================
+    # GRAFIK TOTAL KOMENTAR PER ASPEK
+    # =====================================================
+
+    if jenis == "Jumlah Komentar":
+
+        total_aspek = data.copy()
+
+        total_aspek["Total"] = (
+            total_aspek[positif]
+            + total_aspek[negatif]
+            + total_aspek[netral]
+         )
+
+    else:
+
+        total_aspek = data.copy()
+
+        total_aspek["Total"] = (
+            total_aspek[positif]
+            + total_aspek[negatif]
+            + total_aspek[netral]
+        )
+
+    fig_total = px.bar(
+
+        total_aspek.sort_values(
+            "Total",
+            ascending=False
+        ),
+
+        x=aspek,
+
+        y="Total",
+
+        text="Total"
+
+    )
+
+    fig_total.update_traces(
+
+        textposition="outside",
+
+        marker_color="#1f77b4"
+
+    )
+
+    fig_total.update_layout(
+
+        title=dict(
+
+            text=f"Distribusi Total Komentar per Aspek ({dataset_pilih})",
+
+            font=dict(size=30)
+
+        ),
+
+        xaxis=dict(
+
+            title="Aspek",
+
+            tickangle=-45,
+
+            title_font=dict(size=22),
+
+            tickfont=dict(size=18)
+
+        ),
+
+        yaxis=dict(
+
+            title="Jumlah Komentar" if jenis=="Jumlah Komentar" else "Persentase",
+
+            title_font=dict(size=22),
+
+            tickfont=dict(size=18)
+
+        ),
+
+        showlegend=False,
+
+        height=650
+
+    )
+
+    st.plotly_chart(
+
+        fig_total,
+
+        use_container_width=True
+
+    )
+
+    st.divider()
     fig = px.bar(
 
         data,
