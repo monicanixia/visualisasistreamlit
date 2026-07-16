@@ -571,6 +571,46 @@ dihasilkan dari proses Topic Modeling (LDA).
     netral = "Netral"
     positif = "Positif"
 
+    # ============================================
+    # URUTAN ASPEK
+    # ============================================
+
+    urutan_aspek = [
+
+        "Harga dan Pembelian Mobil Listrik",
+
+        "Keunggulan dan Manfaat Mobil Listrik",
+
+        "Infrastruktur dan Pengembangan Kendaraan Listrik",
+
+        "Baterai dan Teknologi Kendaraan Listrik",
+
+        "Efisiensi Energi dan Penggunaan Harian",
+
+        "Pengisian Daya dan Teknologi Pendukung",
+
+        "Operasional dan Pengalaman Penggunaan",
+
+        "Industri dan Persaingan Pasar Mobil Listrik",
+
+        "Tantangan dan Dampak Industri Otomotif",
+
+        "Minat dan Persepsi Masyarakat"
+
+    ]
+
+    data[aspek] = pd.Categorical(
+
+        data[aspek],
+
+        categories=urutan_aspek,
+
+        ordered=True
+
+    )
+
+    data = data.sort_values(aspek)
+
     # =====================================================
     # GRAFIK TOTAL KOMENTAR PER ASPEK
     # =====================================================
@@ -583,88 +623,51 @@ dihasilkan dari proses Topic Modeling (LDA).
             total_aspek[positif]
             + total_aspek[negatif]
             + total_aspek[netral]
-         )
-
-    else:
-
-        total_aspek = data.copy()
-
-        total_aspek["Total"] = (
-            total_aspek[positif]
-            + total_aspek[negatif]
-            + total_aspek[netral]
         )
 
-    fig_total = px.bar(
+        fig_total = px.bar(
 
-        total_aspek.sort_values(
-            "Total",
-            ascending=False
-        ),
+            total_aspek,
 
-        x=aspek,
+            x=aspek,
 
-        y="Total",
+            y="Total",
 
-        text="Total"
+            text="Total"
 
-    )
+        )
 
-    fig_total.update_traces(
+        fig_total.update_traces(
 
-        textposition="outside",
+            textposition="outside",
 
-        marker_color="#1f77b4"
+            marker_color="#1f77b4"
 
-    )
+        )
 
-    fig_total.update_layout(
+        fig_total.update_layout(
 
-        title=dict(
+            title=f"Distribusi Total Komentar per Aspek ({dataset_pilih})",
 
-            text=f"Distribusi Total Komentar per Aspek ({dataset_pilih})",
+            xaxis_title="Aspek",
 
-            font=dict(size=30)
+            yaxis_title="Jumlah Komentar",
 
-        ),
+            showlegend=False,
 
-        xaxis=dict(
+            height=650
 
-            title="Aspek",
+        )
 
-            tickangle=-45,
+        st.plotly_chart(
 
-            title_font=dict(size=22),
+            fig_total,
 
-            tickfont=dict(size=18)
+            use_container_width=True
 
-        ),
+         )
 
-        yaxis=dict(
-
-            title="Jumlah Komentar" if jenis=="Jumlah Komentar" else "Persentase",
-
-            title_font=dict(size=22),
-
-            tickfont=dict(size=18)
-
-        ),
-
-        showlegend=False,
-
-        height=650
-
-    )
-
-    st.plotly_chart(
-
-        fig_total,
-
-        use_container_width=True
-
-    )
-
-    st.divider()
+        st.divider()
     fig = px.bar(
 
         data,
