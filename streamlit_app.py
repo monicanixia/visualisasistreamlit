@@ -647,8 +647,6 @@ dihasilkan dari proses Topic Modeling (LDA).
 
         fig_total.update_layout(
 
-            title=f"Distribusi Total Komentar per Aspek ({dataset_pilih})",
-
             xaxis_title="Aspek",
 
             yaxis_title="Jumlah Komentar",
@@ -658,7 +656,7 @@ dihasilkan dari proses Topic Modeling (LDA).
             height=650
 
         )
-
+        st.subheader(f"Distribusi Total Komentar per Aspek ({dataset_pilih})")
         st.plotly_chart(
 
             fig_total,
